@@ -10,7 +10,7 @@ from common import ROOT, LOCAL, DIST, KitError, android_jar, build_tool, executa
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--output', default=str(DIST / 'QuestStartupHelper-v3.0.apk'))
+    parser.add_argument('--output', default=str(DIST / 'QuestStartupHelper-v4.0.apk'))
     parser.add_argument('--keystore')
     parser.add_argument('--password-file')
     args = parser.parse_args()
@@ -23,7 +23,7 @@ def main():
         jar = android_jar()
         run([executable('javac'), '--release', '8', '-cp', jar, '-d', classes,
              *sorted((source / 'src').rglob('*.java'))])
-        for required in ['State', 'KeepService', 'BootReceiver', 'MainActivity', 'AdminReceiver', 'CinemaShortcutActivity']:
+        for required in ['State', 'KeepService', 'BootReceiver', 'MainActivity', 'AdminReceiver', 'CinemaShortcutActivity', 'VolumeShortcut']:
             if not (classes / 'local/quest/adbkeeper' / (required + '.class')).exists():
                 raise KitError(f'Missing compiled class: {required}')
         run([build_tool('d8'), '--min-api', '26', '--lib', jar, '--output', dex,

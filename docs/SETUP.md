@@ -18,7 +18,7 @@ python3 tools/quest.py --serial QUEST_USB_SERIAL info
 
 ```sh
 python3 tools/quest.py install-cinema dist/QuestCinemaFix-v7.apk
-python3 tools/quest.py install-helper dist/QuestStartupHelper-v3.0.apk
+python3 tools/quest.py install-helper dist/QuestStartupHelper-v4.0.apk
 ```
 
 助手安装后所有开关默认关闭，界面可上下滚动。脚本执行一次 `pm grant local.quest.adbkeeper android.permission.WRITE_SECURE_SETTINGS`，再打开助手以解除新安装应用的 stopped 状态。
@@ -30,6 +30,14 @@ python3 tools/quest.py open-launcher
 ```
 
 本版影院名字自带 `★`，在 Lightning Launcher 的默认名称排序下可排在前面。实机已确认可用左手柄点开。这里指启动器入口；没有把应用固定到 v50 原生系统底部 Dock。
+
+如果没有右手柄、退出影院后无法进入系统应用列表，启用助手 v4 的实体音量快捷键：
+
+```sh
+python3 tools/quest.py volume-shortcut on
+```
+
+保持佩戴，快速按头显音量键 **减、加、减、加**，打开 Lightning Launcher，再用左手柄点 ★ 影院。完全静音时先提高一格；每次间隔不超过 1.5 秒。关闭用 `volume-shortcut off`。详见 [VOLUME-SHORTCUT.md](VOLUME-SHORTCUT.md)。
 
 ## 3. 准备电脑串流
 
@@ -81,6 +89,7 @@ python3 tools/quest.py open-cinema
 python3 tools/quest.py keep-usb on
 python3 tools/quest.py keep-wifi on
 python3 tools/quest.py autostart on
+python3 tools/quest.py volume-shortcut on
 ```
 
 重启后佩戴、唤醒头显，约一分钟后应自动出现影院。助手不会在每次退出应用时把你强行带回影院。ADB 重连详见 [ADB-AND-STARTUP.md](ADB-AND-STARTUP.md)。

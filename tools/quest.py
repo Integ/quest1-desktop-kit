@@ -138,7 +138,7 @@ def main():
         commands.add_parser(command)
     for command in ['install-helper', 'install-cinema']:
         commands.add_parser(command).add_argument('apk')
-    for command in ['keep-usb', 'keep-wifi', 'autostart']:
+    for command in ['keep-usb', 'keep-wifi', 'autostart', 'volume-shortcut']:
         commands.add_parser(command).add_argument('state', choices=['on', 'off'])
     for command in ['featured', 'tutorial']:
         commands.add_parser(command).add_argument('state', choices=['hide', 'show'])
@@ -171,13 +171,15 @@ def main():
             device.shell('pm', 'grant', HELPER, 'android.permission.WRITE_SECURE_SETTINGS')
             device.shell('am', 'start', '-n', HELPER + '/.MainActivity')
         print('Installed. Existing data is preserved when the signing certificate matches.')
-    elif command in ['keep-usb', 'keep-wifi', 'autostart']:
+    elif command in ['keep-usb', 'keep-wifi', 'autostart', 'volume-shortcut']:
         on = args.state == 'on'
-        if command == 'autostart' and on:
+        if command in ['autostart', 'volume-shortcut'] and on:
             device.shell('appops', 'set', HELPER, 'SYSTEM_ALERT_WINDOW', 'allow')
-        action = {'keep-usb': 'USB_', 'keep-wifi': '', 'autostart': 'CINEMA_'}[command]
+        action = {'keep-usb': 'USB_', 'keep-wifi': '', 'autostart': 'CINEMA_', 'volume-shortcut': 'LAUNCHER_'}[command]
         print(device.admin(action + ('ENABLE' if on else 'DISABLE')))
-        print('Preference updated. Disabling a USB/Wi-Fi keeper also turns that debugging transport off.')
+        print('Preference updated.')
+        if command in ['keep-usb', 'keep-wifi'] and not on:
+            print('The corresponding debugging transport is now off.')
     elif command in ['featured', 'tutorial']:
         package = 'com.oculus.store' if command == 'featured' else 'com.oculus.firsttimenux'
         operation = 'disable-user' if args.state == 'hide' else 'default-state'

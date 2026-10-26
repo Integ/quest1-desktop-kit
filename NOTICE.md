@@ -26,6 +26,9 @@ the same repository/tag (`helper/`, `tools/build_helper.py`, `tools/common.py`,
 `tools/quest.py`, and `docs/BUILD.md`). Signing keys are kept private; users can
 build and install their own signed copies on their own headsets.
 
+Kit release v0.1.0 contains helper v3; kit release v0.1.1 contains helper v4.
+Use the matching Git tag for the exact corresponding source of each release.
+
 The cinema modifications are prominently identified as **Quest Cinema Fix**,
 package `local.quest.cinema`, versionCode 7. They are not an official update
 from Meta, Oculus, Moonlight, Sunshine or the original VR client author.

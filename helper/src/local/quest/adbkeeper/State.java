@@ -14,7 +14,12 @@ final class State {
     }
     static boolean cinemaEnabled(Context c) { return prefs(c).getBoolean("cinema_auto",false); }
     static boolean usbEnabled(Context c) { return prefs(c).getBoolean("usb_enabled",false); }
-    static boolean needed(Context c) { return enabled(c) || usbEnabled(c) || cinemaEnabled(c); }
+    static boolean launcherShortcutEnabled(Context c) { return prefs(c).getBoolean("launcher_shortcut",false); }
+    static boolean needed(Context c) { return enabled(c) || usbEnabled(c) || cinemaEnabled(c) || launcherShortcutEnabled(c); }
+    static void setLauncherShortcutEnabled(Context c, boolean enabled) {
+        prefs(c).edit().putBoolean("launcher_shortcut",enabled).commit();
+        updateService(c);
+    }
     static int boot(Context c) { return Settings.Global.getInt(c.getContentResolver(),Settings.Global.BOOT_COUNT,0); }
     static void setCinemaEnabled(Context c, boolean enabled) {
         prefs(c).edit().putBoolean("cinema_auto",enabled).putInt("cinema_boot",boot(c)).commit();

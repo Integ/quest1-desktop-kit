@@ -12,5 +12,7 @@ public final class AdminReceiver extends BroadcastReceiver {
         else if ("local.quest.adbkeeper.CINEMA_DISABLE".equals(intent.getAction())) State.setCinemaEnabled(context,false);
         else if ("local.quest.adbkeeper.USB_ENABLE".equals(intent.getAction())) State.setUsbEnabled(context,true);
         else if ("local.quest.adbkeeper.USB_DISABLE".equals(intent.getAction())) State.setUsbEnabled(context,false);
+        else if ("local.quest.adbkeeper.LAUNCHER_ENABLE".equals(intent.getAction())) State.setLauncherShortcutEnabled(context,true);
+        else if ("local.quest.adbkeeper.LAUNCHER_DISABLE".equals(intent.getAction())) State.setLauncherShortcutEnabled(context,false);
     }
 }

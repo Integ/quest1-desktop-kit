@@ -1,5 +1,11 @@
 # 故障排查
 
+## 没有右手柄，退出后进不了应用列表
+
+使用启动助手 v4 的[实体音量快捷入口](VOLUME-SHORTCUT.md)：先执行 `python3 tools/quest.py volume-shortcut on`，再在头显上快速按“减、加、减、加”，用左手柄点前排 ★ 影院。若完全静音，先提高一格。
+
+Mac 上已有授权 ADB 时，也可以双击仓库内的 `Open Cinema.command` 或 `Open App List.command`。这两个入口不需要恢复出厂或重新配对。
+
 ## 影院能打开，但看不到桌面
 
 先确认电脑的 Sunshine 正在运行、双方还在同一网络、Mac 捕获权限有效。影院内选择电脑后还要选 `Mac Desktop`。
@@ -32,6 +38,8 @@ python3 tools/quest.py open-cinema
 本次 H.264 遇到关键帧/编码兼容问题，强制软件编码也未解决；最后 **H.265 / HEVC + Mac 硬件编码** 出现正常桌面。补丁还处理了旧 Qualcomm HEVC 黑名单、Sunshine RTSP 参数、ENet 控制回复、Android 鼠标捕获和空视图崩溃，不能只靠切换一个编码选项替代整套补丁。
 
 先检查 Sunshine 日志是否有新的会话、有效的屏幕捕获和 HEVC 编码器。若用户已看到桌面后才突然退出，查看头显 `logcat` 中是否有 `RtpReorderQueue` 断言；v7 专门修复了 ARM64 迟到包触发的队列断言。日志可能含地址或应用信息，分享前先删个人数据。
+
+后续另一次退出定位为 **`RtpFecQueue.c` / `reconstructFrame()` / `ret == 0`**，属于不同的视频纠错路径，目前尚未修复。助手 v4 提供重新进入应用列表的入口，影院仍是 v7；不能将该入口更新理解为修复了视频纠错崩溃。
 
 ## 屏幕很小、有黑边
 

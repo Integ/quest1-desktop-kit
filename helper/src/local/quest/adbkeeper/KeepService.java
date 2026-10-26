@@ -7,6 +7,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -19,6 +22,28 @@ import android.provider.Settings;
 import android.util.Log;
 
 public final class KeepService extends Service {
+    private final VolumeShortcut volumeShortcut = new VolumeShortcut();
+    private final BroadcastReceiver volumeReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            if (!State.launcherShortcutEnabled(context)) { volumeShortcut.reset(); return; }
+            if (!"android.media.VOLUME_CHANGED_ACTION".equals(intent.getAction())) return;
+            if (intent.getIntExtra("android.media.EXTRA_VOLUME_STREAM_TYPE",-1) != 3) return;
+            int oldValue = intent.getIntExtra("android.media.EXTRA_PREV_VOLUME_STREAM_VALUE",-1);
+            int newValue = intent.getIntExtra("android.media.EXTRA_VOLUME_STREAM_VALUE",-1);
+            Log.d("QuestQuickLaunch","volume " + oldValue + " -> " + newValue);
+            if (volumeShortcut.accept(oldValue,newValue,SystemClock.elapsedRealtime())) {
+                if (!Settings.canDrawOverlays(context)) {
+                    Log.w("QuestQuickLaunch","Background launch permission unavailable"); return;
+                }
+                Intent launcher = getPackageManager().getLaunchIntentForPackage("com.threethan.launcher");
+                if (launcher != null) {
+                    launcher.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    try { startActivity(launcher); Log.i("QuestQuickLaunch","Opened app list from volume shortcut"); }
+                    catch (RuntimeException e) { Log.w("QuestQuickLaunch","Cannot open app list",e); }
+                }
+            }
+        }
+    };
     private final Handler handler = new Handler();
     private final Runnable check = new Runnable() {
         public void run() {
@@ -74,6 +99,7 @@ public final class KeepService extends Service {
         NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         nm.createNotificationChannel(new NotificationChannel("adb_keeper","Quest 启动助手",NotificationManager.IMPORTANCE_LOW));
         startForeground(1,notification());
+        registerReceiver(volumeReceiver,new IntentFilter("android.media.VOLUME_CHANGED_ACTION"));
     }
     private Notification notification() {
         PendingIntent open = PendingIntent.getActivity(this,0,new Intent(this,CinemaShortcutActivity.class),PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
@@ -81,7 +107,7 @@ public final class KeepService extends Service {
         return new Notification.Builder(this,"adb_keeper")
             .setSmallIcon(android.R.drawable.stat_notify_sync)
             .setContentTitle("打开 Quest Cinema Fix")
-            .setContentText("影院："+(State.cinemaEnabled(this)?"自启":"手动")+" · USB："+(State.usbEnabled(this)?"常驻":"关")+" · Wi-Fi："+(State.enabled(this)?"常驻":"关"))
+            .setContentText("音量减加减加："+(State.launcherShortcutEnabled(this)?"应用列表":"关")+" · USB："+(State.usbEnabled(this)?"常驻":"关")+" · Wi-Fi："+(State.enabled(this)?"常驻":"关"))
             .setContentIntent(open)
             .addAction(new Notification.Action.Builder(android.R.drawable.ic_media_play,"打开影院",open).build())
             .addAction(new Notification.Action.Builder(android.R.drawable.ic_menu_preferences,"设置",settings).build())
@@ -91,6 +117,6 @@ public final class KeepService extends Service {
         ((NotificationManager)getSystemService(NOTIFICATION_SERVICE)).notify(1,notification());
         handler.removeCallbacks(check);handler.post(check);return START_STICKY;
     }
-    public void onDestroy() { handler.removeCallbacks(check);stopForeground(true);super.onDestroy(); }
+    public void onDestroy() { unregisterReceiver(volumeReceiver);handler.removeCallbacks(check);stopForeground(true);super.onDestroy(); }
     public IBinder onBind(Intent intent) { return null; }
 }

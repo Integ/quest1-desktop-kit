@@ -18,8 +18,10 @@ def main():
         source = ROOT / 'cinema/java/local/quest/cinema'
         run([executable('javac'), '-d', folder, source / 'LeftControlState.java',
              source / 'LeftTapGesture.java', ROOT / 'tests/LeftControlStateTest.java',
-             ROOT / 'tests/LeftTapGestureTest.java'])
-        for name in ['LeftControlStateTest', 'LeftTapGestureTest']:
+             ROOT / 'tests/LeftTapGestureTest.java',
+             ROOT / 'helper/src/local/quest/adbkeeper/VolumeShortcut.java',
+             ROOT / 'tests/VolumeShortcutTest.java'])
+        for name in ['LeftControlStateTest', 'LeftTapGestureTest', 'VolumeShortcutTest']:
             run([executable('java'), '-cp', folder, name])
         fixture = ROOT / 'tests/fixtures/rtp'
         original = (fixture / 'RtpReorderQueue.c').read_text()

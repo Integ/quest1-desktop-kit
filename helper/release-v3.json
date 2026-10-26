@@ -4,7 +4,7 @@
   "version_name": "3.0-cinema-usb",
   "apk_sha256": "03f4f97ca902789e56cca01b4b1f8c3dec96131448328f325a8e3c782fb02892",
   "certificate_sha256": "d9dd58624458932332595388d0530ce3352ec1d83c36a53b599d3e00fe38af09",
-  "note": "Release APK is the device-tested build. Complete source is in helper/; local rebuild signatures and DEX metadata may differ.",
+  "note": "Historical helper v3 release. Complete corresponding source is in helper/ at kit tag v0.1.0.",
   "source_sha256": {
     "helper/AndroidManifest.xml": "3191fbef3980c1d4f8f86249d3bbd03850743e7a42591344ffaa8f3aca922484",
     "helper/res/drawable/cinema.xml": "e9f8b83ee30a9a06056be7f3edfafff4334f9d947aaba6d978cc662c6f0e7a5d",
@@ -14,5 +14,6 @@
     "helper/src/local/quest/adbkeeper/KeepService.java": "e4da6783956dc085a872110858f6cebc17ea6dbb7dfafd40542656cf7edb84b9",
     "helper/src/local/quest/adbkeeper/MainActivity.java": "94196606b1f42d6b3f764125d24897a7dc5c47fd04abcfeff7528a8d969afe2d",
     "helper/src/local/quest/adbkeeper/State.java": "df41b276ff571299b0105d5073afd3a3f0f8c36951bc82720e4080316645a4fa"
-  }
+  },
+  "source_ref": "v0.1.0"
 }

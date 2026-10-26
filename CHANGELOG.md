@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.1.1 — 2026-10-25
+
+- Publish helper v4 (`4.0-volume-launcher`): an opt-in headset volume
+  down/up/down/up sequence opens Lightning Launcher after cinema exits,
+  without a right controller. Confirmed with physical headset buttons.
+- Preserve USB/Wi-Fi retention and cinema autostart; no added Manifest
+  permissions. Add on/off UI, protected admin actions and sequence regressions.
+- Add `volume-shortcut on/off` CLI commands and portable Mac quick-open scripts.
+- Document the separate, still unresolved video FEC assertion. Cinema remains
+  versionCode 7; its patches and internal code hashes are unchanged.
+- Retain the one-headset pre-release scope; no new v4 reboot claim.
+
 ## v0.1.0 — 2026-10-25
 
 First public kit, based on one tested Quest 1 v50 installation.

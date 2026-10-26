@@ -4,7 +4,7 @@
 
 这是一次真实设备改造的可复用整理。已在一台 **Quest 1 v50 / Android 10、仅有左 Touch 手柄、Apple Silicon Mac** 上验证。电脑继续用自己的键盘鼠标；头显负责显示和播放声音。
 
-**[开始安装](docs/SETUP.md) · [构建 APK](docs/BUILD.md) · [故障排查](docs/TROUBLESHOOTING.md) · [恢复原设置](docs/RECOVERY.md) · [English](README.en.md)**
+**[开始安装](docs/SETUP.md) · [音量键打开应用列表](docs/VOLUME-SHORTCUT.md) · [构建 APK](docs/BUILD.md) · [故障排查](docs/TROUBLESHOOTING.md) · [恢复原设置](docs/RECOVERY.md) · [English](README.en.md)**
 
 ```mermaid
 flowchart LR
@@ -24,6 +24,7 @@ flowchart LR
 | 系统声音 | 2 声道；左右独立测试音通过 |
 | 开机打开影院 | 启动助手等待系统就绪、头显唤醒后，每次开机只打开一次 |
 | 快速入口 | Lightning Launcher 中带 ★ 的影院入口排在前面 |
+| 没有右手柄时重新打开应用 | 头显音量键快速按“减、加、减、加”，直接打开应用列表；已用实体按键确认 |
 | 长期 ADB | 可分别开启 USB / Wi-Fi 保持；USB 已做真实重启验证 |
 | Featured | 可选择停用商店包，避免其开机面板；可以恢复 |
 | 时间 | 自动校时 + 手动指定正确的 IANA 时区 |
@@ -52,7 +53,7 @@ python3 tools/build_cinema.py
 python3 tools/build_helper.py
 
 python3 tools/quest.py install-cinema dist/QuestCinemaFix-v7.apk
-python3 tools/quest.py install-helper dist/QuestStartupHelper-v3.0.apk
+python3 tools/quest.py install-helper dist/QuestStartupHelper-v4.0.apk
 ```
 
 启动助手也可以从 [Releases](https://github.com/Integ/quest1-desktop-kit/releases) 下载，先验证附带的 SHA-256。影院涉及上游 SDK 和素材，提供补丁与本地构建工具，**不在本仓库或 Release 上传完整影院 APK**。构建脚本只接受固定 SHA-256 的原版，逐文件验证补丁，并核对重建代码与实机版本一致。
@@ -63,10 +64,13 @@ python3 tools/quest.py install-helper dist/QuestStartupHelper-v3.0.apk
 python3 tools/quest.py keep-usb on
 python3 tools/quest.py keep-wifi on
 python3 tools/quest.py autostart on
+python3 tools/quest.py volume-shortcut on
 python3 tools/quest.py open-cinema
 ```
 
-`autostart on` 对**下一次开机**生效；当前立即打开用 `open-cinema`。保持工具需要一次 ADB 授予 `WRITE_SECURE_SETTINGS`，安装脚本会执行。自启还会授予 `SYSTEM_ALERT_WINDOW` 特殊访问权限，以符合 Android 10 后台启动规则；助手不绘制悬浮窗。详见[权限与行为](docs/ADB-AND-STARTUP.md)。
+`autostart on` 对**下一次开机**生效；当前立即打开用 `open-cinema`。保持工具需要一次 ADB 授予 `WRITE_SECURE_SETTINGS`，安装脚本会执行。自启或音量快捷入口还会授予 `SYSTEM_ALERT_WINDOW` 特殊访问权限，以符合 Android 10 后台启动规则；助手不绘制悬浮窗。详见[权限与行为](docs/ADB-AND-STARTUP.md)。
+
+影院退出后：保持头显戴着，快速按实体音量键 **减 → 加 → 减 → 加**，再用左手柄点应用列表前排的 **★ Quest Cinema Fix**。每次间隔不超过 1.5 秒；完全静音时先提高一格音量。这个入口由头显上的助手提供，使用时无需电脑连接。详见[快捷入口说明](docs/VOLUME-SHORTCUT.md)。
 
 已装的同包名 APK 必须使用相同签名才能覆盖更新。第一次自建会在 `.local/signing/` 生成自己的签名；备份它，别上传它。遇到签名不一致时先看构建说明，不要直接卸载丢掉已有配对数据。
 
@@ -90,7 +94,7 @@ Sunshine 通用配置生成和完整配对步骤见[安装说明](docs/SETUP.md)
 
 | 路径 | 内容 |
 | --- | --- |
-| `helper/` | Quest 启动助手 v3 完整 Java 源码、Manifest 和资源 |
+| `helper/` | Quest 启动助手 v4 完整 Java 源码、Manifest 和资源 |
 | `cinema/java/`、`cinema/smali/` | 左手输入逻辑的 Java 源码及实际补丁使用的 smali |
 | `cinema/patches/` | Android 10、HEVC、立体声、输入兼容与星标入口补丁 |
 | `cinema/patch-manifest.json` | 原版哈希、精确补丁、原生库字节修复与结果哈希 |
@@ -107,6 +111,8 @@ python3 tools/test.py
 ## 验证范围和授权
 
 版本、重启结果和用户确认记录见[验证记录](docs/VALIDATION.md)。目前是一台设备的结果；主机端新整理的管理脚本做了模拟设备选择测试，没有把它们重新应用到已配置好的头显。Windows / Linux 主机和其他固件尚未做端到端验证。
+
+**已知问题：** 影院 v7 后续又出现视频 `RtpFecQueue.c` 的纠错断言崩溃，尚未修复。本次助手 v4 解决退出后无法打开应用列表的问题；之前音频 RTP 乱序修复与这次视频纠错故障是不同路径。
 
 发布内容已去除个人序列号、内网地址、网络名称、配对信息、ADB 私钥、主机密码、原始日志和签名私钥。每个使用者都需要自己的配对和签名。
 

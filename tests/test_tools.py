@@ -10,7 +10,7 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
 from common import KitError, download
 from build_cinema import apply_text_patch
-from quest import choose, connect
+from quest import choose, connect, main as quest_main
 from sunshine import initialize
 
 
@@ -62,6 +62,23 @@ class SelectionTests(unittest.TestCase):
                                  ('127.0.0.1', None, False)]:
             with self.assertRaises(KitError):
                 connect(FakeAdb({}), host, 'HEADSET', port, scan)
+
+    def test_volume_shortcut_grants_launch_access_and_enables_only_shortcut(self):
+        adb = FakeAdb({'USB': ('monterey', 'HEADSET')})
+        with patch('quest.Adb', return_value=adb), patch('sys.argv', ['quest.py', 'volume-shortcut', 'on']), patch('builtins.print'):
+            quest_main()
+        self.assertEqual(adb.writes, [
+            ('-s', 'USB', 'shell', 'appops', 'set', 'local.quest.adbkeeper', 'SYSTEM_ALERT_WINDOW', 'allow'),
+            ('-s', 'USB', 'shell', 'am', 'broadcast', '-n', 'local.quest.adbkeeper/.AdminReceiver',
+             '-a', 'local.quest.adbkeeper.LAUNCHER_ENABLE')])
+
+    def test_disabling_shortcut_does_not_disable_adb_or_revoke_shared_launch_access(self):
+        adb = FakeAdb({'USB': ('monterey', 'HEADSET')})
+        with patch('quest.Adb', return_value=adb), patch('sys.argv', ['quest.py', 'volume-shortcut', 'off']), patch('builtins.print'):
+            quest_main()
+        self.assertEqual(adb.writes, [
+            ('-s', 'USB', 'shell', 'am', 'broadcast', '-n', 'local.quest.adbkeeper/.AdminReceiver',
+             '-a', 'local.quest.adbkeeper.LAUNCHER_DISABLE')])
 
 
 class PatchTests(unittest.TestCase):

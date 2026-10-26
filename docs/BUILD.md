@@ -20,7 +20,7 @@ sdkmanager 'platforms;android-34' 'build-tools;35.0.0' 'platform-tools'
 python3 tools/build_helper.py
 ```
 
-输出 `dist/QuestStartupHelper-v3.0.apk`。源码位于 `helper/`，`minSdk=26`、`targetSdk=28`，包名 `local.quest.adbkeeper`，versionCode 3。构建依次执行 javac、D8、aapt、zipalign 和 apksigner，并检查必要类是否存在、签名是否有效。
+输出 `dist/QuestStartupHelper-v4.0.apk`。源码位于 `helper/`，`minSdk=26`、`targetSdk=28`，包名 `local.quest.adbkeeper`，versionCode 4、versionName `4.0-volume-launcher`。构建依次执行 javac、D8、aapt、zipalign 和 apksigner，并检查必要类是否存在、签名是否有效。v4 保留 v3 的权限清单，增加头显音量键快捷入口。
 
 ## Quest Cinema Fix
 
@@ -73,6 +73,6 @@ python3 tools/test.py
 python3 tools/audit.py
 ```
 
-前者不连接设备：Python 管理工具测试、Java 左手状态/手势测试、原版 RTP 断言复现及修复后的 ASan/UBSan 回归。后者检查可发布文件，拒绝常见私钥和二进制产物混入源码目录；它不能替代人工隐私检查。
+前者不连接设备：Python 管理工具测试、Java 左手状态/手势和音量序列测试、原版 RTP 断言复现及修复后的 ASan/UBSan 回归。后者检查可发布文件，拒绝常见私钥和二进制产物混入源码目录；它不能替代人工隐私检查。
 
 完整源码和安装脚本随本仓库发布；Release 只附原创启动助手及校验文件。影院完整 SDK、素材和 APK 从上游在使用者本机取得，不随仓库再分发。

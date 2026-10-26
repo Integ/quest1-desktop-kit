@@ -5,6 +5,7 @@
 | 目标 | 命令 / 行为 |
 | --- | --- |
 | 停止影院开机自启 | `python3 tools/quest.py autostart off` |
+| 停止实体音量快捷入口 | `python3 tools/quest.py volume-shortcut off` |
 | 停止 Wi-Fi ADB 保持并关闭 Wi-Fi 调试 | `python3 tools/quest.py keep-wifi off` |
 | 停止 USB ADB 保持并关闭 USB 调试 | `python3 tools/quest.py keep-usb off` |
 | 恢复商店 Featured | `python3 tools/quest.py featured show` |
@@ -20,7 +21,7 @@
 adb -s TRANSPORT shell settings delete global adb_allowed_connection_time
 ```
 
-需要撤回助手特殊权限时，先关闭三个开关，再执行：
+需要撤回助手特殊权限时，先关闭四个开关，再执行：
 
 ```sh
 adb -s TRANSPORT shell appops set local.quest.adbkeeper SYSTEM_ALERT_WINDOW default

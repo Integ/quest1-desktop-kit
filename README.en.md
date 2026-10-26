@@ -10,6 +10,9 @@ with **only a left Touch controller**.
 - Single X selects; a quick double X opens/closes the cinema menu or goes back.
 - Original startup helper source and a downloadable APK: optional cinema autostart,
   USB debugging recovery after reboot, and Wi-Fi debugging retention.
+- Helper v4 adds a tested physical-headset-volume shortcut: down, up, down, up
+  opens Lightning Launcher, so a missing right controller does not trap you after
+  cinema exits. Enable with `python3 tools/quest.py volume-shortcut on`.
 - Optional Store/Featured suppression, time-zone correction, reversible admin tools,
   build integrity checks and host-side regressions.
 
@@ -37,3 +40,8 @@ You must review the upstream terms when using that client.
 Tested on one physical headset; see [validation details](docs/VALIDATION.md) and
 [recovery commands](docs/RECOVERY.md). Original kit code is GPL-3.0-or-later;
 third-party material retains its own terms, listed in [NOTICE](NOTICE.md).
+
+Known issue: cinema v7 later hit a separate video `RtpFecQueue.c` recovery
+assertion. That crash is still unresolved; the v4 shortcut restores access to the
+app list and does not fix this video path. The earlier audio reorder-queue fix
+remains in place. See [volume-shortcut setup](docs/VOLUME-SHORTCUT.md).
