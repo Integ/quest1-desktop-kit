@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.2.0 — 2026-10-25
+
+- Publish cinema v8 (`1.0-quest-left-stereo-multifec`) ARM64 network source and
+  a pinned NDK r27c / Android 29 build path. Helper stays at v4.
+- Backport upstream multi-FEC complete-frame staging; reject incomplete or corrupt
+  frames and request recovery instead of taking the old assertion path.
+- Send explicit `0x0302` IDR requests for Sunshine and retain the ENet reply-wait
+  and audio RTP fixes. Add bounded RTSP Session-token parsing with leading-space
+  and timeout-parameter handling.
+- Preserve pairing, Java/VR code, left-hand controls, stereo and launcher entries.
+- Record a roughly three-minute stable picture/audio test with real-loss recovery
+  at an 8 Mbps host cap. Some host keyframe warnings remain; no new reboot or
+  long-duration claim. Keep pre-release status.
+- Distribute source/build tools and the original helper APK only. Complete cinema
+  APKs, SDK assets and prebuilt cinema network libraries remain excluded.
+
 ## v0.1.1 — 2026-10-25
 
 - Publish helper v4 (`4.0-volume-launcher`): an opt-in headset volume

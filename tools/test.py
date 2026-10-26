@@ -9,6 +9,7 @@ import sys
 import tempfile
 
 from common import ROOT, KitError, executable, run
+from test_native import main as test_native_video
 
 
 def main():
@@ -46,6 +47,7 @@ def main():
             raise KitError('Original release did not reproduce the expected assertion')
         print('PASS: original release reproduces the RTP assertion')
         run([fixed_binary, 'late'], env=environment)
+    test_native_video()
     print('All host checks passed. These checks do not replace headset testing.')
 
 

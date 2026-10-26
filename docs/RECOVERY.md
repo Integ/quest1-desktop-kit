@@ -47,4 +47,6 @@ adb -s TRANSPORT shell settings put global auto_time_zone 1
 
 本项目生成的电脑配置集中在 `.local/sunshine/`。先退出对应 Sunshine 进程，再自行归档或移除这一目录；它含私钥和账号/配对状态，不要传到 issue。其他已有 Sunshine 配置没有被脚本覆盖。
 
+若要撤销本次测试的码率上限，先停止对应 Sunshine 进程，在自己的配置中把 `max_bitrate` 恢复为先前值，或删除新增的 `max_bitrate = 8000`，再启动服务。无需删除配对和凭据。
+
 本项目没有刷写固件、修改系统分区或获取 root。通常不需要用恢复出厂来撤销这些改动。

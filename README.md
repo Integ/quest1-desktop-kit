@@ -22,6 +22,7 @@ flowchart LR
 | 桌面大屏 | 原生 VR 影院，可在 Void 场景调节屏幕距离 |
 | 只有左手柄 | 注视目标 + X 选择；快速双击 X 返回或切换影院菜单 |
 | 系统声音 | 2 声道；左右独立测试音通过 |
+| 视频恢复（影院 v8） | 多纠错块整帧重组、损坏帧丢弃与显式关键帧请求；约 3 分钟实机测试画面和声音稳定 |
 | 开机打开影院 | 启动助手等待系统就绪、头显唤醒后，每次开机只打开一次 |
 | 快速入口 | Lightning Launcher 中带 ★ 的影院入口排在前面 |
 | 没有右手柄时重新打开应用 | 头显音量键快速按“减、加、减、加”，直接打开应用列表；已用实体按键确认 |
@@ -41,22 +42,23 @@ flowchart LR
 
 ## 最短安装路径
 
-以下命令在仓库根目录运行，需要 Python 3.10+ 与 Android platform-tools。构建还需要 JDK 与 Android SDK，详见[构建说明](docs/BUILD.md)。
+以下命令在仓库根目录运行，需要 Python 3.10+ 与 Android platform-tools。影院 v8 还需要 **NDK r27c**，面向 **Quest 1 v50 / arm64-v8a / Android API 29**，公开 APK 的最低 API 为 29；APK 打包需要 JDK 和 Android SDK。详见[构建说明](docs/BUILD.md)。
 
 ```sh
 git clone https://github.com/Integ/quest1-desktop-kit.git
 cd quest1-desktop-kit
 python3 tools/quest.py info
 
-# 获取校验固定版本的上游 APK，应用补丁，在本机生成签名后构建
-python3 tools/build_cinema.py
+# 从固定上游源码构建 v8 网络模块，再应用影院补丁和本地签名
+python3 tools/build_native.py --ndk /path/to/ndk
+python3 tools/build_cinema.py --native-library dist/libmoonlight-core.so
 python3 tools/build_helper.py
 
-python3 tools/quest.py install-cinema dist/QuestCinemaFix-v7.apk
+python3 tools/quest.py install-cinema dist/QuestCinemaFix-v8.apk
 python3 tools/quest.py install-helper dist/QuestStartupHelper-v4.0.apk
 ```
 
-启动助手也可以从 [Releases](https://github.com/Integ/quest1-desktop-kit/releases) 下载，先验证附带的 SHA-256。影院涉及上游 SDK 和素材，提供补丁与本地构建工具，**不在本仓库或 Release 上传完整影院 APK**。构建脚本只接受固定 SHA-256 的原版，逐文件验证补丁，并核对重建代码与实机版本一致。
+启动助手也可以从 [Releases](https://github.com/Integ/quest1-desktop-kit/releases) 下载，先验证附带的 SHA-256。影院涉及上游 SDK 和素材，提供源码补丁与本地构建工具，**不在本仓库或 Release 上传完整影院 APK、SDK 素材或预编译网络库**。v8 校验固定源码和打包输入，确认原有 Java / VR 代码保持基线，再加入你构建的网络模块；不同工具链或构建路径的原生库不承诺字节级一致。
 
 按需开启功能，安装本身不会默认启用：
 
@@ -88,7 +90,7 @@ python3 tools/quest.py open-cinema
 | 保持按住并拖动 | 保留原有拖动行为；拖动不会当作双击 |
 | Y / 三横线菜单键 | 旧兼容层实机没有可靠传入，不作为必要操作 |
 
-Sunshine 通用配置生成和完整配对步骤见[安装说明](docs/SETUP.md)。脚本默认关闭远端键盘、鼠标、手柄转发与 UPnP，保留桌面和声音串流。
+Sunshine 通用配置生成和完整配对步骤见[安装说明](docs/SETUP.md)。脚本默认关闭远端键盘、鼠标、手柄转发与 UPnP，保留桌面和声音串流。本次 v8 实测使用 `max_bitrate = 8000`（Kbps）为无线链路留出余量，HEVC 硬件编码和正常纠错保持开启；限码率不是对旧崩溃代码的替代修复。
 
 ## 仓库内容
 
@@ -98,8 +100,9 @@ Sunshine 通用配置生成和完整配对步骤见[安装说明](docs/SETUP.md)
 | `cinema/java/`、`cinema/smali/` | 左手输入逻辑的 Java 源码及实际补丁使用的 smali |
 | `cinema/patches/` | Android 10、HEVC、立体声、输入兼容与星标入口补丁 |
 | `cinema/patch-manifest.json` | 原版哈希、精确补丁、原生库字节修复与结果哈希 |
+| `cinema/native/` | v8 的 10 个已测试 C / 头文件、固定基础提交与源码校验信息 |
 | `tools/` | 构建、设备选择、ADB / 自启管理、Sunshine 配置和会话恢复 |
-| `tests/` | 输入状态、双击手势、设备选择和 RTP 崩溃回归测试 |
+| `tests/` | 20 项 Python 测试、3 组 Java 输入/手势测试，以及音视频 RTP/FEC 回归 |
 | `docs/` | 安装、初始化边界、技术修复、实机验证和撤销方法 |
 
 运行不接触设备的回归检查：
@@ -110,9 +113,9 @@ python3 tools/test.py
 
 ## 验证范围和授权
 
-版本、重启结果和用户确认记录见[验证记录](docs/VALIDATION.md)。目前是一台设备的结果；主机端新整理的管理脚本做了模拟设备选择测试，没有把它们重新应用到已配置好的头显。Windows / Linux 主机和其他固件尚未做端到端验证。
+公开 v8 流程已完成网络模块构建、两阶段 APK 打包、代码哈希及 API/版本/签名验证；20 项 Python、3 组 Java 和 ASan/UBSan 回归全部通过。版本、重启结果和用户确认记录见[验证记录](docs/VALIDATION.md)。目前是一台设备的结果；主机端新整理的管理脚本做了模拟设备选择测试，没有把它们重新应用到已配置好的头显。Windows / Linux 主机和其他固件尚未做端到端验证。
 
-**已知问题：** 影院 v7 后续又出现视频 `RtpFecQueue.c` 的纠错断言崩溃，尚未修复。本次助手 v4 解决退出后无法打开应用列表的问题；之前音频 RTP 乱序修复与这次视频纠错故障是不同路径。
+**v8 验证范围：** v7 后续出现的视频纠错断言和恢复问题已在 v8 中针对处理。用户确认约 3 分钟画面稳定、声音正常，日志观察到真实丢帧后的恢复且无新致命错误。Mac VideoToolbox 仍可能输出关键帧警告；尚未做长时间、所有网络环境或新的重启测试，保留预发布标记。助手仍为 v4。
 
 发布内容已去除个人序列号、内网地址、网络名称、配对信息、ADB 私钥、主机密码、原始日志和签名私钥。每个使用者都需要自己的配对和签名。
 

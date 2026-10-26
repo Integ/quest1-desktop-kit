@@ -1,0 +1,71 @@
+{
+  "base_repository": "https://github.com/penkamaster/OculusSdk-moonlight.git",
+  "base_ref": "1.0",
+  "base_commit": "dd966792bc3d3807e3c8781e5be68db9bc99192a",
+  "multi_fec_upstream_commit": "7174caf5f1edafc34341860e233d5079f9dc3c5e",
+  "ndk_revision": "27.2.12479018",
+  "abi": "arm64-v8a",
+  "android_api": 29,
+  "files": [
+    {
+      "path": "moonlight-common/src/main/jni/moonlight-core/moonlight-common-c/src/ControlStream.c",
+      "source": "cinema/native/src/ControlStream.c",
+      "before_sha256": "973e41bcaedd560f63ea47a8ed3b94e3f31719317b5597eb4ad3c9621ca55dde",
+      "after_sha256": "f8d85143846b874c856ca7020f4864a38e98d3cea685e34fa74cf78ededfdc64"
+    },
+    {
+      "path": "moonlight-common/src/main/jni/moonlight-core/moonlight-common-c/src/Limelight-internal.h",
+      "source": "cinema/native/src/Limelight-internal.h",
+      "before_sha256": "3a424f31262a0dc4df7a758563900c855cb10eb92ccfa4e868ab539509ccadff",
+      "after_sha256": "2d14b1aba22f8fa0c7ebcda27237580aaca123ecdaee4efd6c7394e2c3513d3f"
+    },
+    {
+      "path": "moonlight-common/src/main/jni/moonlight-core/moonlight-common-c/src/Misc.c",
+      "source": "cinema/native/src/Misc.c",
+      "before_sha256": "5f991f7783bcc5ca1035cb59b1a3b4feb871b461f32ad140559c42dfa38eb70e",
+      "after_sha256": "efbb078ade3a805a0f534433986d0fed95343bf4ee0308166a560ec72544a60a"
+    },
+    {
+      "path": "moonlight-common/src/main/jni/moonlight-core/moonlight-common-c/src/RtpFecQueue.c",
+      "source": "cinema/native/src/RtpFecQueue.c",
+      "before_sha256": "f82ce938faf35041da89e772ab7015ecac746bdbdbc3a020e95ff431ac8afc0a",
+      "after_sha256": "83e3941490e67f5c30da2f257586a982f4042891f9e060e30875d4bee51778ba"
+    },
+    {
+      "path": "moonlight-common/src/main/jni/moonlight-core/moonlight-common-c/src/RtpFecQueue.h",
+      "source": "cinema/native/src/RtpFecQueue.h",
+      "before_sha256": "6a7d6d88d82f727de6206aa214c0e27ff2df7f2c8cddf6f84260ccc21a0aaef3",
+      "after_sha256": "12c47fe592d0735f9e4b6b2f08941cfe23612a65cea140697ca4c2f62248620a"
+    },
+    {
+      "path": "moonlight-common/src/main/jni/moonlight-core/moonlight-common-c/src/RtpReorderQueue.c",
+      "source": "cinema/native/src/RtpReorderQueue.c",
+      "before_sha256": "9ce69b62974cdd06ec0f56e47af08fb77365d8c0260d754624a006a76ca71064",
+      "after_sha256": "2a115f50b7921bac2e0fd99ceea38688107429fd221df022ef91b00a8c3dc427"
+    },
+    {
+      "path": "moonlight-common/src/main/jni/moonlight-core/moonlight-common-c/src/RtspConnection.c",
+      "source": "cinema/native/src/RtspConnection.c",
+      "before_sha256": "c6c704b0fa64b3b8aba7ab6ac984ded981850b440b4ae7b0bd27217a33d6cfaf",
+      "after_sha256": "17bd3ab69608e11b2953acc0ca41c855cac1d58f45153ce2e736e2ec0f5ea035"
+    },
+    {
+      "path": "moonlight-common/src/main/jni/moonlight-core/moonlight-common-c/src/SdpGenerator.c",
+      "source": "cinema/native/src/SdpGenerator.c",
+      "before_sha256": "d80e882b4c1a5e8af56985dca958ce8f7420969edaa793b08d3c5f159a010bf5",
+      "after_sha256": "c3b630d2145b973161d34b160057fbadb01e29d8a936d1919766996cd8e44724"
+    },
+    {
+      "path": "moonlight-common/src/main/jni/moonlight-core/moonlight-common-c/src/Video.h",
+      "source": "cinema/native/src/Video.h",
+      "before_sha256": "490bea4c020cdc92587a947818858686ee06030fc7b40f01c4bd4be4e3341a2a",
+      "after_sha256": "d2cbc40eccef5ffba7c85df51ec7e6baf1ccb4b566bf485238570b7acd80ceb6"
+    },
+    {
+      "path": "moonlight-common/src/main/jni/moonlight-core/moonlight-common-c/src/VideoDepacketizer.c",
+      "source": "cinema/native/src/VideoDepacketizer.c",
+      "before_sha256": "4851c7d6260ca07343f2c6ed877b7ad654a1d5bc6ab650efe36e9ec3c90dbac3",
+      "after_sha256": "7181645b81681a781f04519a833d8b521ea04223e52fa2739785b9af4dfd9787"
+    }
+  ]
+}

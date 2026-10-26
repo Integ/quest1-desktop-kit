@@ -17,11 +17,11 @@ python3 tools/quest.py --serial QUEST_USB_SERIAL info
 按 [BUILD.md](BUILD.md) 构建影院和启动助手，或仅从本项目 Release 下载助手。安装：
 
 ```sh
-python3 tools/quest.py install-cinema dist/QuestCinemaFix-v7.apk
+python3 tools/quest.py install-cinema dist/QuestCinemaFix-v8.apk
 python3 tools/quest.py install-helper dist/QuestStartupHelper-v4.0.apk
 ```
 
-助手安装后所有开关默认关闭，界面可上下滚动。脚本执行一次 `pm grant local.quest.adbkeeper android.permission.WRITE_SECURE_SETTINGS`，再打开助手以解除新安装应用的 stopped 状态。
+影院 v8 要求 Quest 1 v50、Android API 29 和 ARM64。助手安装后所有开关默认关闭，界面可上下滚动。脚本执行一次 `pm grant local.quest.adbkeeper android.permission.WRITE_SECURE_SETTINGS`，再打开助手以解除新安装应用的 stopped 状态。
 
 从 [Lightning Launcher 官方发布页](https://github.com/threethan/LightningLauncher/releases/tag/10.0.1) 获取已验证的 10.0.1 版本。其包名为 `com.threethan.launcher`。安装下载的 APK 后：
 
@@ -61,6 +61,14 @@ python3 tools/sunshine.py start --binary /path/to/sunshine
 配置只写入仓库内被 Git 忽略的 `.local/sunshine/`，不覆盖已有文件。`start` 在前台运行；不要同时启动另一个占用相同端口的 Sunshine 实例。
 
 生成的配置启用音频，关闭远端输入转发及 UPnP，管理界面只允许本机访问。串流仍通过局域网进入电脑，需要防火墙允许相关流量。不要把调试或串流端口映射到公网。
+
+本次 v8 实测在自己的 Sunshine 配置中设置以下上限，保持 HEVC 硬件编码和正常 FEC：
+
+```ini
+max_bitrate = 8000
+```
+
+单位为 Kbps。编辑自己的配置后，重新启动对应 Sunshine 进程，再建立新串流；保留原配对和凭据。这个约 8 Mbps 上限降低网络和解码负担，不能替代 v8 的多 FEC 块、丢帧恢复与连接解析修复。
 
 ## 4. 配对和选择桌面
 

@@ -33,13 +33,19 @@ python3 tools/quest.py open-cinema
 
 ## 黑屏、加载或连接即退
 
-确认安装的是本项目固定原版构建的 v7，包名 `local.quest.cinema`，versionName `1.0-quest-left-stereo-shortcut-rtp`。
+确认安装的是本项目固定原版构建的 v8，包名 `local.quest.cinema`，versionName `1.0-quest-left-stereo-multifec`，运行于 Quest 1 v50 / API 29 / ARM64。
 
 本次 H.264 遇到关键帧/编码兼容问题，强制软件编码也未解决；最后 **H.265 / HEVC + Mac 硬件编码** 出现正常桌面。补丁还处理了旧 Qualcomm HEVC 黑名单、Sunshine RTSP 参数、ENet 控制回复、Android 鼠标捕获和空视图崩溃，不能只靠切换一个编码选项替代整套补丁。
 
 先检查 Sunshine 日志是否有新的会话、有效的屏幕捕获和 HEVC 编码器。若用户已看到桌面后才突然退出，查看头显 `logcat` 中是否有 `RtpReorderQueue` 断言；v7 专门修复了 ARM64 迟到包触发的队列断言。日志可能含地址或应用信息，分享前先删个人数据。
 
-后续另一次退出定位为 **`RtpFecQueue.c` / `reconstructFrame()` / `ret == 0`**，属于不同的视频纠错路径，目前尚未修复。助手 v4 提供重新进入应用列表的入口，影院仍是 v7；不能将该入口更新理解为修复了视频纠错崩溃。
+历史 v7 的另一次退出定位为 **`RtpFecQueue.c` / `reconstructFrame()` / `ret == 0`**，属于不同的视频纠错路径。v8 通过源码重建 ARM64 网络库，处理多块重组、损坏帧拒绝和显式 IDR 恢复；同时修正旧 16 字节 RTSP Session 缓冲区及空白/timeout 解析。按 [BUILD.md](BUILD.md) 构建 v8，不能只装助手 v4 来修复影院。
+
+## 马赛克、丢帧后卡住或闪退
+
+先确认已升级 v8，并保留 HEVC 硬件编码和正常 FEC。本次在 Sunshine 中设置 `max_bitrate = 8000` Kbps 后完成约 3 分钟实测，画面和声音正常；设置方法见 [SETUP.md](SETUP.md)。降低码率能减轻负担，但不能代替 v8 的完整帧重组和恢复请求。
+
+v8 遇到缺块或损坏帧会丢弃该帧并请求 `0x0302` IDR，不把残帧继续送给解码器。若仍反复发生，分别检查无线网络丢包、Sunshine 屏幕捕获/编码状态和头显崩溃记录。部分 Mac VideoToolbox 关键帧警告在本次短测中仍存在；应结合是否恢复画面判断，不能仅凭一条警告认定客户端已经崩溃。分享日志前删除账号、地址、证书和其他个人信息。
 
 ## 屏幕很小、有黑边
 
@@ -49,7 +55,7 @@ python3 tools/quest.py open-cinema
 
 ## 只有左声道
 
-本次原因是客户端强制请求 5.1，未正确映射到立体声输出。已改 `enable51Surround=false` 且 `setAudioConfiguration(0)`，原生 Opus 输出 2 声道。v7 保留该修复。
+本次原因是客户端强制请求 5.1，未正确映射到立体声输出。已改 `enable51Surround=false` 且 `setAudioConfiguration(0)`，原生 Opus 输出 2 声道。v8 保留该修复。
 
 确认 Sunshine `stream_audio = enabled`，主机有有效音频源和捕获授权；再播放左右分离的测试音。若只有某一侧物理扬声器/耳机异常，也需检查音量、插头和耳机本身，不能把所有单声道问题都归于协议。
 

@@ -7,6 +7,8 @@ with **only a left Touch controller**.
 - Sunshine desktop mirroring with HEVC and working two-channel audio.
 - Patches for the legacy native-VR Moonlight cinema client: Android 10 crashes,
   current Sunshine protocol compatibility, left-hand input, stereo and a late-RTP crash.
+- Cinema v8 rebuilds the ARM64 network module with complete multi-FEC-frame staging,
+  corrupt-frame recovery, explicit IDR requests and bounded RTSP Session parsing.
 - Single X selects; a quick double X opens/closes the cinema menu or goes back.
 - Original startup helper source and a downloadable APK: optional cinema autostart,
   USB debugging recovery after reboot, and Wi-Fi debugging retention.
@@ -19,7 +21,16 @@ with **only a left Touch controller**.
 Start with the [Chinese setup guide](docs/SETUP.md) and [build guide](docs/BUILD.md).
 The commands are also listed in the [main README](README.md).
 Python 3.10+, JDK and Android SDK platform/build tools are needed for local builds.
-Run `python3 tools/test.py` for hardware-free Python, Java and sanitized C tests.
+Cinema v8 also needs NDK r27c (`27.2.12479018`) and targets Quest 1 v50 /
+arm64-v8a / Android API 29. The public packager declares a minimum API of 29;
+the new native path is not validated on ARM32.
+Build its module with `python3 tools/build_native.py --ndk /path/to/ndk`, then run
+`python3 tools/build_cinema.py --native-library dist/libmoonlight-core.so`.
+Run `python3 tools/test.py` for 20 hardware-free Python tests, three Java test
+groups and sanitized C regressions; all passed. The public native build and
+two-stage v8 APK build also passed code-hash, API/version and signature checks.
+The second stage retains verified DEX bytes while raising the minimum API,
+so smali does not rebuild the tested Java code with a different DEX format.
 
 **An already authorized ADB connection is required.** This is not a universal
 factory-setup or missing-right-controller bypass. The headset used in this case
@@ -33,15 +44,21 @@ button did not reliably reach the legacy compatibility layer; double X was teste
 The helper APK is available under [Releases](https://github.com/Integ/quest1-desktop-kit/releases),
 with its complete source under `helper/` and build instructions. The full cinema APK,
 Oculus SDK binaries/assets, personal pairing state and signing keys are not distributed.
-`python3 tools/build_cinema.py` downloads a SHA-256-pinned upstream release, applies
-strict patches and checks all 11 code/native-library hashes against the tested build.
-You must review the upstream terms when using that client.
+The cinema builder downloads a SHA-256-pinned upstream APK and applies strict
+baseline patches. v8 preserves the other 10 DEX/native-library entries and inserts
+the specified rebuilt network library; source hashes are checked, while native
+binaries are not claimed to be byte-identical across toolchains or build paths.
+Use `--legacy-v7` only to reproduce the historical v7 baseline without NDK.
+You must review the upstream terms when using that client. No prebuilt cinema
+network library is distributed in this repository or its releases.
 
 Tested on one physical headset; see [validation details](docs/VALIDATION.md) and
 [recovery commands](docs/RECOVERY.md). Original kit code is GPL-3.0-or-later;
 third-party material retains its own terms, listed in [NOTICE](NOTICE.md).
 
-Known issue: cinema v7 later hit a separate video `RtpFecQueue.c` recovery
-assertion. That crash is still unresolved; the v4 shortcut restores access to the
-app list and does not fix this video path. The earlier audio reorder-queue fix
-remains in place. See [volume-shortcut setup](docs/VOLUME-SHORTCUT.md).
+v8 addresses the video FEC assertion and recovery paths found after v7. The user
+confirmed approximately three minutes of stable picture and normal audio, including
+recovery after actual loss. The test used an 8 Mbps Sunshine video cap, hardware
+HEVC and normal FEC. Some VideoToolbox keyframe warnings remain; long-duration,
+other-network and new reboot testing are not claimed. Helper v4 is unchanged.
+See [technical fixes](docs/PATCHES.md) and [volume-shortcut setup](docs/VOLUME-SHORTCUT.md).

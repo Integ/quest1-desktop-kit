@@ -1,0 +1,3 @@
+# Preserve checksum-pinned upstream source bytes, including original whitespace.
+cinema/native/src/* -whitespace
+tests/native_video/reedsolomon/* -whitespace

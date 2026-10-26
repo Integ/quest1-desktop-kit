@@ -41,4 +41,6 @@ python3 tools/quest.py volume-shortcut off
 
 ## 崩溃的边界
 
-本次退出日志定位到视频 `RtpFecQueue.c` 中 `reconstructFrame()` 的 `ret == 0` 断言。它不同于 v7 已处理的音频 RTP 乱序队列问题。视频纠错崩溃**尚未修复**；本次 v4 的作用是让用户在应用退出后能自己重新打开应用列表。影院补丁与代码哈希没有改变。
+引入助手 v4 时，影院 v7 发生过视频 `RtpFecQueue.c` 中 `reconstructFrame()` 的 `ret == 0` 断言。它不同于 v7 已处理的音频 RTP 乱序问题；当时 v4 只提供退出后的应用列表入口。
+
+后续影院 v8 修复了多块视频纠错、损坏帧拒绝、IDR 恢复和 RTSP 解析，约 3 分钟实测画面与声音稳定，详见 [VALIDATION.md](VALIDATION.md)。助手仍是同一个 v4，音量快捷入口行为和权限不变；它也继续作为应用退出后的备用入口。

@@ -1,0 +1,14 @@
+{
+  "version_code": 8,
+  "version_name": "1.0-quest-left-stereo-multifec",
+  "base_commit": "dd966792bc3d3807e3c8781e5be68db9bc99192a",
+  "fec_upstream_commit": "7174caf5f1edafc34341860e233d5079f9dc3c5e",
+  "encoder_max_bitrate_kbps": 8000,
+  "apk_sha256": "c060d9ebcd3f3e5139e92a4d0225df2d3de12eef6d4c05da61bdabb5f929e24e",
+  "native_sha256": "0aaffc87c763102c8a38a33c9e9bec04884b979d9c1734d9ba8a46e359f53fdd",
+  "native_log_fatal_count": 0,
+  "host_encoder_note": "Some VideoToolbox keyframe warnings remain, but client recovered and user confirmed stable picture/audio during the short test.",
+  "test_duration_seconds": 181,
+  "validation": "One Quest 1 v50: user confirmed stable desktop and normal audio for about three minutes. Real frame loss led to an explicit IDR request and resumed video. Stream stopped through normal nativePause/StopMovie lifecycle.",
+  "binary_reproducibility": "This is a tested-binary fingerprint; source builds may differ by NDK/toolchain/build path. Non-network APK code is checked against the existing v7 baseline."
+}
