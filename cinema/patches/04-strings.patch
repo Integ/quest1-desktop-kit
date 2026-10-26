@@ -1,0 +1,11 @@
+--- a/res/values-zh-rCN/strings.xml
++++ b/res/values-zh-rCN/strings.xml
+@@ -40,7 +40,7 @@
+     <string name="addpc_fail">无法连接到指定的电脑。请确保指定的端口没有被防火墙阻止</string>
+     <string name="addpc_success">成功添加电脑</string>
+     <string name="addpc_unknown_host">无法解析电脑的IP地址，请确保IP地址输入无误</string>
+-    <string name="app_name">串流影院</string>
++    <string name="app_name">★ Quest Cinema Fix</string>
+     <string name="applist_connect_msg">连接到电脑中...</string>
+     <string name="applist_menu_cancel">取消</string>
+     <string name="applist_menu_quit">退出串流</string>

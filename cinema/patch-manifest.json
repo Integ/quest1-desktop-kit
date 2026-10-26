@@ -1,0 +1,129 @@
+{
+  "upstream_version": "1.0",
+  "upstream_apk_sha256": "0cb4c2061cc68e30a171c08cb8a4ba3541f8dbcb50e94d84aeb025bad1055364",
+  "patches": [
+    {
+      "path": "AndroidManifest.xml",
+      "patch": "cinema/patches/01-AndroidManifest.patch",
+      "before_sha256": "b5e0ee13dbbbdf7491becc0744e9565dbdd58c145c41a70308ec1cac93881d84",
+      "after_sha256": "c8653c04041c96bae2f8e6a384d88b7ab790fc1b0a138c4a889a0351f594a105"
+    },
+    {
+      "path": "apktool.yml",
+      "patch": "cinema/patches/02-apktool.patch",
+      "before_sha256": "1b6170d4b75799f76550336ead38e70e7698e33edf1ffff7ed1125851d0f6d99",
+      "after_sha256": "a2fa14e27530c4cfd8c3a19fe1c0eb45d074b3b0a9187fdbf3e34a88193dd640"
+    },
+    {
+      "path": "res/values/strings.xml",
+      "patch": "cinema/patches/03-strings.patch",
+      "before_sha256": "f14845b18ea2bbb5ed67e952c032e218612b52c1317bc5dc3f8349ef5403eb69",
+      "after_sha256": "794cd8fbd7d6c0b3c14d397c5eb0992c0602864e2bd8a2e295ade7cd0a514761"
+    },
+    {
+      "path": "res/values-zh-rCN/strings.xml",
+      "patch": "cinema/patches/04-strings.patch",
+      "before_sha256": "a9f7bc4f0a4779b1ca1e0f5283d9d87d2546fbfd20b02e8b30cfaa88c9235c1e",
+      "after_sha256": "622dd6a01b2efecbe56e0c4ca62d67c65dcadc5bdaf2c6b9e23ac3cd0a3c3651"
+    },
+    {
+      "path": "smali/com/oculus/cinemasdk/MainActivity.smali",
+      "patch": "cinema/patches/05-MainActivity.patch",
+      "before_sha256": "bd265b66c2977c0b18bfe587d5913be93cfb8afd69fd8e3eac4d9e843b98ea87",
+      "after_sha256": "0cb421002a154986565eafd30b1aa9735a32a002cb48cb8e6a4416ef1963f40b"
+    },
+    {
+      "path": "smali/com/limelight/StreamInterface.smali",
+      "patch": "cinema/patches/06-StreamInterface.patch",
+      "before_sha256": "f45f0f3038f01d981d509e640b39a0b19ff15fee5df633458fa2836193e50c38",
+      "after_sha256": "41fadb591f111c0c46c0816edabf41be007cbb3076fd520cad84b330261a5888"
+    },
+    {
+      "path": "smali/com/limelight/preferences/PreferenceConfiguration.smali",
+      "patch": "cinema/patches/07-PreferenceConfiguration.patch",
+      "before_sha256": "626eb4b87cc004d49307083d7e438a05cedd079f812a249b8bd687948a5956ed",
+      "after_sha256": "1e4487dd272788425f0b031b1b69fa89dc34249ca6f81e43381acaf7b172b725"
+    },
+    {
+      "path": "smali/com/limelight/binding/video/MediaCodecHelper.smali",
+      "patch": "cinema/patches/08-MediaCodecHelper.patch",
+      "before_sha256": "0685559a850f3bae40fe3eef677702293ed9e4cf83acb2812bcef4b3a69ac6f4",
+      "after_sha256": "8266a671da932ad1275da84c016c14e92d4d2dea0e1c7e25c4b8e8465dc70466"
+    },
+    {
+      "path": "smali/com/limelight/binding/input/capture/InputCaptureManager.smali",
+      "patch": "cinema/patches/09-InputCaptureManager.patch",
+      "before_sha256": "157e96704e416469093436142efc7f4338a7695be543cce14f909c83345b9ffd",
+      "after_sha256": "5ae4c0e576ed9257cf79a0dafe1f32e864b5e9bb132c6f33645172de5b09f09f"
+    },
+    {
+      "path": "lib/arm64-v8a/libmoonlight-core.so",
+      "before_sha256": "1d2bb8e09428fd5147050bbff1fd60d4ee4a346cb00839fc7aef62396a2e0637",
+      "after_sha256": "1fb1fcd0947b07117763f55a6ccb376ccaa3d7b79fb3618a6779c4c55b314093",
+      "binary_changes": [
+        {
+          "offset": 393976,
+          "before_hex": "e1a3",
+          "after_hex": "1200"
+        },
+        {
+          "offset": 393979,
+          "before_hex": "91",
+          "after_hex": "14"
+        },
+        {
+          "offset": 415572,
+          "before_hex": "4c00",
+          "after_hex": "cc02"
+        },
+        {
+          "offset": 1382393,
+          "before_hex": "7669",
+          "after_hex": "6175"
+        },
+        {
+          "offset": 1382396,
+          "before_hex": "65",
+          "after_hex": "69"
+        },
+        {
+          "offset": 1382398,
+          "before_hex": "5b305d2e6672616d657357697468496e76",
+          "after_hex": "2e737572726f756e642e417564696f5175"
+        },
+        {
+          "offset": 1382418,
+          "before_hex": "645265665468726573686f6c64",
+          "after_hex": "74790000000000000000000000"
+        }
+      ]
+    },
+    {
+      "path": "lib/armeabi-v7a/libmoonlight-core.so",
+      "before_sha256": "b563c86095a69fc754ac37df8c4e4a717587adce41d7584ca6a9ff29b2c70205",
+      "after_sha256": "f47253f6a0b529e0e375e012ac08a4d82cd4dec3ccdf9c804fcd5286e4c0c58b",
+      "binary_changes": [
+        {
+          "offset": 1186322,
+          "before_hex": "7669",
+          "after_hex": "6175"
+        },
+        {
+          "offset": 1186325,
+          "before_hex": "65",
+          "after_hex": "69"
+        },
+        {
+          "offset": 1186327,
+          "before_hex": "5b305d2e6672616d657357697468496e76",
+          "after_hex": "2e737572726f756e642e417564696f5175"
+        },
+        {
+          "offset": 1186347,
+          "before_hex": "645265665468726573686f6c64",
+          "after_hex": "74790000000000000000000000"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+--- a/smali/com/limelight/binding/video/MediaCodecHelper.smali
++++ b/smali/com/limelight/binding/video/MediaCodecHelper.smali
+@@ -1913,7 +1913,7 @@
+     :cond_3
+     sget-object v2, Lcom/limelight/binding/video/MediaCodecHelper;->blacklistedDecoderPrefixes:Ljava/util/List;
+ 
+-    const-string v3, "OMX.qcom.video.decoder.hevc"
++    const-string v3, "unused.legacy.qualcomm.hevc.blacklist"
+ 
+     invoke-interface {v2, v3}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+ 

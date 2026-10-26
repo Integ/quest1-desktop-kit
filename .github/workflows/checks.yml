@@ -1,0 +1,13 @@
+name: Host regressions
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python, Java and sanitized C regressions (no device required)
+        run: python3 tools/test.py
+      - name: Publication hygiene
+        run: python3 tools/audit.py

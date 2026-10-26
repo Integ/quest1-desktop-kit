@@ -1,0 +1,33 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="local.quest.adbkeeper" android:versionCode="3" android:versionName="3.0-cinema-usb">
+    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="28" />
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Android 10 requires this user-controlled special access for boot activity launches. No overlay is drawn. -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <application android:label="Quest 启动助手" android:allowBackup="false" android:theme="@android:style/Theme.Material.NoActionBar">
+        <activity android:name=".MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="com.oculus.intent.category.2D" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".CinemaShortcutActivity" android:exported="true" android:label="打开 Quest Cinema Fix" android:icon="@drawable/cinema" android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="com.oculus.intent.category.2D" />
+            </intent-filter>
+        </activity>
+        <service android:name=".KeepService" android:exported="false" android:directBootAware="true" />
+        <receiver android:name=".BootReceiver" android:exported="false" android:directBootAware="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".AdminReceiver" android:exported="true" android:permission="android.permission.WRITE_SECURE_SETTINGS" />
+    </application>
+</manifest>

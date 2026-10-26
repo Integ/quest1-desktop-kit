@@ -1,0 +1,11 @@
+--- a/smali/com/limelight/preferences/PreferenceConfiguration.smali
++++ b/smali/com/limelight/preferences/PreferenceConfiguration.smali
+@@ -556,6 +556,8 @@
+ 
+     move-result v3
+ 
++    const/4 v3, -0x1
++
+     iput v3, v0, Lcom/limelight/preferences/PreferenceConfiguration;->videoFormat:I
+ 
+     .line 229

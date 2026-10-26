@@ -1,0 +1,13 @@
+{
+  "classes.dex": "b5ae4a945a634ce521e4727de3dcac7cdd2225d09077b44465b5f03100e9c9f7",
+  "lib/armeabi-v7a/libgvr_audio.so": "83b63001ef0cb77c83c7b1dfc6541b806c11d8feaad232af6a999556908a6e3e",
+  "lib/armeabi-v7a/libmoonlight-core.so": "f47253f6a0b529e0e375e012ac08a4d82cd4dec3ccdf9c804fcd5286e4c0c58b",
+  "lib/armeabi-v7a/libvrapi.so": "f10ec8829dcf0f1438bf562d39c9bb8758e8214be264f102ebf6e90b0c2a37c8",
+  "lib/armeabi-v7a/libcinema.so": "a318841cda8ea9d633a3222a30132042281a74d7330a271b4fdb7ef7716e3cc3",
+  "lib/armeabi-v7a/libgvr.so": "915e3277836e1f80437c5c2e0c49cd6d2f03cbcfaefaa3233b50b65401fb7b86",
+  "lib/arm64-v8a/libgvr_audio.so": "65a003336d42f9fc74028baa23a8e9bca1432abdf51934b3f3d823afd1bdcd2a",
+  "lib/arm64-v8a/libmoonlight-core.so": "1fb1fcd0947b07117763f55a6ccb376ccaa3d7b79fb3618a6779c4c55b314093",
+  "lib/arm64-v8a/libvrapi.so": "dfc80c0841e1407e8795bd170073c7b4895427af756d4b9d8df9ec7a92fa8793",
+  "lib/arm64-v8a/libcinema.so": "bcdced76fea31bdf50f80193a579fe2e71e21aeca5161d5ececde265c329ba31",
+  "lib/arm64-v8a/libgvr.so": "60d1bee52fe26b14bf4bc9598a212f7d129f7417be2ed2a4063a247285041dc9"
+}

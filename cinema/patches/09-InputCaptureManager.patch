@@ -1,0 +1,94 @@
+--- a/smali/com/limelight/binding/input/capture/InputCaptureManager.smali
++++ b/smali/com/limelight/binding/input/capture/InputCaptureManager.smali
+@@ -15,88 +15,8 @@
+ .end method
+ 
+ .method public static getInputCaptureProvider(Landroid/app/Activity;Lcom/limelight/binding/input/evdev/EvdevListener;)Lcom/limelight/binding/input/capture/InputCaptureProvider;
+-    .locals 2
+-    .param p0, "activity"    # Landroid/app/Activity;
+-    .param p1, "rootListener"    # Lcom/limelight/binding/input/evdev/EvdevListener;
+-
+-    .prologue
+-    .line 13
+-    invoke-static {}, Lcom/limelight/binding/input/capture/AndroidNativePointerCaptureProvider;->isCaptureProviderSupported()Z
+-
+-    move-result v0
+-
+-    if-eqz v0, :cond_0
+-
+-    .line 14
+-    const-string v0, "Using Android O+ native mouse capture"
+-
+-    invoke-static {v0}, Lcom/limelight/LimeLog;->info(Ljava/lang/String;)V
+-
+-    .line 15
+-    new-instance v0, Lcom/limelight/binding/input/capture/AndroidNativePointerCaptureProvider;
+-
+-    const v1, 0x7f06002d
+-
+-    invoke-virtual {p0, v1}, Landroid/app/Activity;->findViewById(I)Landroid/view/View;
+-
+-    move-result-object v1
+-
+-    invoke-direct {v0, v1}, Lcom/limelight/binding/input/capture/AndroidNativePointerCaptureProvider;-><init>(Landroid/view/View;)V
+-
+-    .line 35
+-    :goto_0
++    .locals 1
++    new-instance v0, Lcom/limelight/binding/input/capture/NullCaptureProvider;
++    invoke-direct {v0}, Lcom/limelight/binding/input/capture/NullCaptureProvider;-><init>()V
+     return-object v0
+-
+-    .line 23
+-    :cond_0
+-    invoke-static {}, Lcom/limelight/binding/input/evdev/EvdevCaptureProviderShim;->isCaptureProviderSupported()Z
+-
+-    move-result v0
+-
+-    if-eqz v0, :cond_1
+-
+-    .line 24
+-    const-string v0, "Using Evdev mouse capture"
+-
+-    invoke-static {v0}, Lcom/limelight/LimeLog;->info(Ljava/lang/String;)V
+-
+-    .line 25
+-    invoke-static {p0, p1}, Lcom/limelight/binding/input/evdev/EvdevCaptureProviderShim;->createEvdevCaptureProvider(Landroid/app/Activity;Lcom/limelight/binding/input/evdev/EvdevListener;)Lcom/limelight/binding/input/capture/InputCaptureProvider;
+-
+-    move-result-object v0
+-
+-    goto :goto_0
+-
+-    .line 27
+-    :cond_1
+-    invoke-static {}, Lcom/limelight/binding/input/capture/AndroidPointerIconCaptureProvider;->isCaptureProviderSupported()Z
+-
+-    move-result v0
+-
+-    if-eqz v0, :cond_2
+-
+-    .line 30
+-    const-string v0, "Using Android N+ pointer hiding"
+-
+-    invoke-static {v0}, Lcom/limelight/LimeLog;->info(Ljava/lang/String;)V
+-
+-    .line 31
+-    new-instance v0, Lcom/limelight/binding/input/capture/AndroidPointerIconCaptureProvider;
+-
+-    invoke-direct {v0, p0}, Lcom/limelight/binding/input/capture/AndroidPointerIconCaptureProvider;-><init>(Landroid/app/Activity;)V
+-
+-    goto :goto_0
+-
+-    .line 34
+-    :cond_2
+-    const-string v0, "Mouse capture not available"
+-
+-    invoke-static {v0}, Lcom/limelight/LimeLog;->info(Ljava/lang/String;)V
+-
+-    .line 35
+-    new-instance v0, Lcom/limelight/binding/input/capture/NullCaptureProvider;
+-
+-    invoke-direct {v0}, Lcom/limelight/binding/input/capture/NullCaptureProvider;-><init>()V
+-
+-    goto :goto_0
+ .end method

@@ -1,0 +1,38 @@
+--- a/smali/com/limelight/StreamInterface.smali
++++ b/smali/com/limelight/StreamInterface.smali
+@@ -353,7 +353,7 @@
+ 
+     iget-object v2, v0, Lcom/limelight/StreamInterface;->prefConfig:Lcom/limelight/preferences/PreferenceConfiguration;
+ 
+-    const/4 v3, 0x1
++    const/4 v3, 0x0
+ 
+     iput-boolean v3, v2, Lcom/limelight/preferences/PreferenceConfiguration;->enable51Surround:Z
+ 
+@@ -400,6 +400,8 @@
+     move-object/from16 v0, p0
+ 
+     iget-object v2, v0, Lcom/limelight/StreamInterface;->streamView:Lcom/limelight/ui/StreamView;
++
++    if-eqz v2, :cond_1
+ 
+     const/4 v3, 0x1
+ 
+@@ -908,7 +910,7 @@
+ 
+     move-result-object v2
+ 
+-    const/4 v3, 0x1
++    const/4 v3, 0x0
+ 
+     .line 367
+     invoke-virtual {v2, v3}, Lcom/limelight/nvstream/StreamConfiguration$Builder;->setAudioConfiguration(I)Lcom/limelight/nvstream/StreamConfiguration$Builder;
+@@ -4162,6 +4164,8 @@
+ 
+     iget-object v0, p0, Lcom/limelight/StreamInterface;->streamView:Lcom/limelight/ui/StreamView;
+ 
++    if-eqz v0, :cond_1
++
+     invoke-virtual {v0}, Lcom/limelight/ui/StreamView;->getHolder()Landroid/view/SurfaceHolder;
+ 
+     move-result-object v0

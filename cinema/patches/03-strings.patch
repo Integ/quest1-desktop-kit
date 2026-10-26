@@ -1,0 +1,11 @@
+--- a/res/values/strings.xml
++++ b/res/values/strings.xml
+@@ -59,7 +59,7 @@
+     <string name="addpc_wrong_sitelocal">"That address doesn't look right. You must use your router's public IP address for streaming over the Internet."</string>
+     <string name="app_label">Moonlight</string>
+     <string name="app_label_root">Moonlight (Root)</string>
+-    <string name="app_name">Moonlight for Go</string>
++    <string name="app_name">★ Quest Cinema Fix</string>
+     <string name="applist_connect_msg">Connecting to PC…</string>
+     <string name="applist_menu_cancel">Cancel</string>
+     <string name="applist_menu_quit">Quit Session</string>

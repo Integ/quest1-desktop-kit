@@ -1,0 +1,9 @@
+--- a/AndroidManifest.xml
++++ b/AndroidManifest.xml
+@@ -1,5 +1,5 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto" package="com.penkamaster.moonlightForGo">
++<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto" package="local.quest.cinema">
+     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+     <uses-permission android:name="android.permission.INTERNET"/>
