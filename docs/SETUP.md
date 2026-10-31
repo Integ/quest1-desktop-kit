@@ -17,8 +17,8 @@ python3 tools/quest.py --serial QUEST_USB_SERIAL info
 按 [BUILD.md](BUILD.md) 构建影院和启动助手，或仅从本项目 Release 下载助手。安装：
 
 ```sh
-python3 tools/quest.py install-cinema dist/QuestCinemaFix-v8.apk
-python3 tools/quest.py install-helper dist/QuestStartupHelper-v4.0.apk
+python3 tools/quest.py install-cinema dist/QuestCinemaFix-v8.apk     # 或 v12（本地视频），见 LOCAL-VIDEO.md
+python3 tools/quest.py install-helper dist/QuestStartupHelper-v10.0.apk
 ```
 
 影院 v8 要求 Quest 1 v50、Android API 29 和 ARM64。助手安装后所有开关默认关闭，界面可上下滚动。脚本执行一次 `pm grant local.quest.adbkeeper android.permission.WRITE_SECURE_SETTINGS`，再打开助手以解除新安装应用的 stopped 状态。
@@ -31,7 +31,7 @@ python3 tools/quest.py open-launcher
 
 本版影院名字自带 `★`，在 Lightning Launcher 的默认名称排序下可排在前面。实机已确认可用左手柄点开。这里指启动器入口；没有把应用固定到 v50 原生系统底部 Dock。
 
-如果没有右手柄、退出影院后无法进入系统应用列表，启用助手 v4 的实体音量快捷键：
+如果没有右手柄、退出影院后无法进入系统应用列表，启用助手的实体音量快捷键（一只手柄都没有时见 [CONTROLLER-FREE.md](CONTROLLER-FREE.md)）：
 
 ```sh
 python3 tools/quest.py volume-shortcut on

@@ -4,7 +4,7 @@
 
 这是一次真实设备改造的可复用整理。已在一台 **Quest 1 v50 / Android 10、仅有左 Touch 手柄、Apple Silicon Mac** 上验证。电脑继续用自己的键盘鼠标；头显负责显示和播放声音。
 
-**[开始安装](docs/SETUP.md) · [音量键打开应用列表](docs/VOLUME-SHORTCUT.md) · [构建 APK](docs/BUILD.md) · [故障排查](docs/TROUBLESHOOTING.md) · [恢复原设置](docs/RECOVERY.md) · [English](README.en.md)**
+**[开始安装](docs/SETUP.md) · [没有手柄](docs/CONTROLLER-FREE.md) · [本地视频](docs/LOCAL-VIDEO.md) · [Mac 控制台](docs/CONSOLE.md) · [音量键打开应用列表](docs/VOLUME-SHORTCUT.md) · [构建 APK](docs/BUILD.md) · [故障排查](docs/TROUBLESHOOTING.md) · [恢复原设置](docs/RECOVERY.md) · [English](README.en.md)**
 
 ```mermaid
 flowchart LR
@@ -22,6 +22,9 @@ flowchart LR
 | 桌面大屏 | 原生 VR 影院，可在 Void 场景调节屏幕距离 |
 | 只有左手柄 | 注视目标 + X 选择；快速双击 X 返回或切换影院菜单 |
 | 系统声音 | 2 声道；左右独立测试音通过 |
+| 本地视频（影院 v12） | 影院里多了 Local Videos，直接播放头显 Movies / Download 里的视频；海报显示完整文件名，支持断点续播和手柄暂停、快进 |
+| 完全没有手柄 | 影院里用音量键选择和返回；主页按住“减加减加”打开应用列表；主页空着时自动打开应用列表 |
+| Mac 控制台 | 本机网页：状态、截图、打开或安装应用、传视频、系统设置页、电源、助手开关、Sunshine |
 | 视频恢复（影院 v8） | 多纠错块整帧重组、损坏帧丢弃与显式关键帧请求；约 3 分钟实机测试画面和声音稳定 |
 | 开机打开影院 | 启动助手等待系统就绪、头显唤醒后，每次开机只打开一次 |
 | 快速入口 | Lightning Launcher 中带 ★ 的影院入口排在前面 |
@@ -55,7 +58,11 @@ python3 tools/build_cinema.py --native-library dist/libmoonlight-core.so
 python3 tools/build_helper.py
 
 python3 tools/quest.py install-cinema dist/QuestCinemaFix-v8.apk
-python3 tools/quest.py install-helper dist/QuestStartupHelper-v4.0.apk
+python3 tools/quest.py install-helper dist/QuestStartupHelper-v10.0.apk
+
+# 可选：影院 v12（本地视频），以上面的 v8 为输入
+python3 tools/build_cinema_v12.py
+python3 tools/quest.py install-cinema dist/QuestCinemaFix-v12.apk
 ```
 
 启动助手也可以从 [Releases](https://github.com/Integ/quest1-desktop-kit/releases) 下载，先验证附带的 SHA-256。影院涉及上游 SDK 和素材，提供源码补丁与本地构建工具，**不在本仓库或 Release 上传完整影院 APK、SDK 素材或预编译网络库**。v8 校验固定源码和打包输入，确认原有 Java / VR 代码保持基线，再加入你构建的网络模块；不同工具链或构建路径的原生库不承诺字节级一致。
@@ -67,6 +74,7 @@ python3 tools/quest.py keep-usb on
 python3 tools/quest.py keep-wifi on
 python3 tools/quest.py autostart on
 python3 tools/quest.py volume-shortcut on
+python3 tools/quest.py idle-launcher on      # 主页空着时自动打开应用列表（v10）
 python3 tools/quest.py open-cinema
 ```
 
@@ -96,7 +104,9 @@ Sunshine 通用配置生成和完整配对步骤见[安装说明](docs/SETUP.md)
 
 | 路径 | 内容 |
 | --- | --- |
-| `helper/` | Quest 启动助手 v4 完整 Java 源码、Manifest 和资源 |
+| `helper/` | Quest 启动助手 v10 完整 Java 源码、Manifest 和资源 |
+| `cinema/v12/` | 影院 v12 的 Java 源码（音量键导航、本地视频）和编译用的存根 |
+| `console/` | Mac 控制台（Python 标准库 + 静态网页） |
 | `cinema/java/`、`cinema/smali/` | 左手输入逻辑的 Java 源码及实际补丁使用的 smali |
 | `cinema/patches/` | Android 10、HEVC、立体声、输入兼容与星标入口补丁 |
 | `cinema/patch-manifest.json` | 原版哈希、精确补丁、原生库字节修复与结果哈希 |

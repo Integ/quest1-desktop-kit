@@ -20,7 +20,9 @@ sdkmanager 'platforms;android-34' 'build-tools;35.0.0' 'platform-tools' 'ndk;27.
 python3 tools/build_helper.py
 ```
 
-输出 `dist/QuestStartupHelper-v4.0.apk`。源码位于 `helper/`，`minSdk=26`、`targetSdk=28`，包名 `local.quest.adbkeeper`，versionCode 4、versionName `4.0-volume-launcher`。构建依次执行 javac、D8、aapt、zipalign 和 apksigner，并检查必要类是否存在、签名是否有效。v4 保留 v3 的权限清单，增加头显音量键快捷入口。
+输出 `dist/QuestStartupHelper-v10.0.apk`。源码位于 `helper/`，`minSdk=26`、`targetSdk=28`，包名 `local.quest.adbkeeper`，versionCode 10、versionName `10.0-console-status`。构建依次执行 javac、D8、aapt、zipalign 和 apksigner，并检查必要类是否存在、签名是否有效。
+
+v10 相对 v4：在 Meta VR 主页用轮询媒体音量识别“按住”的减加减加手势；主页空着时自动打开应用列表（新增 `READ_LOGS`，只能通过 ADB 授予，见 [CONTROLLER-FREE.md](CONTROLLER-FREE.md)）；升级后由 `MY_PACKAGE_REPLACED` 自动重启服务；管理广播 `STATUS` 汇报全部开关，并新增 `IDLE_ENABLE` / `IDLE_DISABLE`，供 [Quest 控制台](CONSOLE.md) 使用。
 
 ## Quest Cinema Fix
 
@@ -61,6 +63,14 @@ APK 构建分为两个阶段：
 
 这里结合了精确发布版补丁与网络模块源码构建；没有从完整 Oculus SDK 工程重新编译 VR 库。上游源码与授权见 [NOTICE](../NOTICE.md)。历史 v7 的机器码偏移不用于新编译的网络库；说明见 [PATCHES.md](PATCHES.md)。
 
+## Quest Cinema Fix v12（本地视频）
+
+```sh
+python3 tools/build_cinema_v12.py
+```
+
+以上一节生成的 `dist/QuestCinemaFix-v8.apk` 为输入，输出 `dist/QuestCinemaFix-v12.apk`（versionCode 12，`1.0-quest-local-video-stereo-multifec`）。v12 只改 Java 层：`cinema/java` 与 `cinema/v12/java` 合并后编译（同名文件以后者为准），在 `MainActivity` 的 16 个方法开头插入判断，并改写 `PcSelector` 的一处调用。最终 APK 只从重新打包的结果中取 `classes.dex` 和 `AndroidManifest.xml`，其余条目原样取自 v8；构建器会核对原生库、素材和资源逐字节不变、版本号正确。可以用 `--base-apk`、`--output` 指定路径，签名参数与 v8 相同。设计和验证见 [LOCAL-VIDEO.md](LOCAL-VIDEO.md)。
+
 ## 签名和更新
 
 首次构建自动在 `.local/signing/` 生成自己的 PKCS#12 签名与随机密码文件，文件权限限制为当前用户。后续构建沿用同一签名。密码不写入命令行参数，签名文件被 Git 忽略。
@@ -87,4 +97,4 @@ python3 tools/audit.py
 
 前者不连接设备：20 项 Python 测试、3 组 Java 左手状态/手势和音量序列测试、旧音频 RTP 断言复现，以及新的原生视频 ASan/UBSan 回归。Python 测试还覆盖固定原生源码暂存、异常输入保护、NDK 版本限制和 v8 打包的代码保护。也可单独运行 `python3 tools/test_native.py`：它用真实 Reed–Solomon 纠错验证多块重组、乱序、重复、丢块和回绕，并测试实际生产函数的 RTSP Session 解析、IDR 请求和视频载荷边界。这些主机测试不需要 Android NDK，不替代头显解码与网络实测。后者检查可发布文件，拒绝常见私钥和二进制产物混入源码目录；它不能替代人工隐私检查。
 
-源码补丁和安装脚本随本仓库发布；Release 附原创启动助手 v4、源码补丁归档及校验文件。影院完整 SDK、素材和 APK 从上游在使用者本机取得；完整影院 APK 和预编译网络库不随本项目再分发。
+源码补丁和安装脚本随本仓库发布；Release 附原创启动助手（v0.3.0 起为 v10）、源码补丁归档及校验文件。影院完整 SDK、素材和 APK 从上游在使用者本机取得；完整影院 APK 和预编译网络库不随本项目再分发。

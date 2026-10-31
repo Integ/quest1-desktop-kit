@@ -4,6 +4,8 @@
 
 使用启动助手 v4 的[实体音量快捷入口](VOLUME-SHORTCUT.md)：先执行 `python3 tools/quest.py volume-shortcut on`，再在头显上快速按“减、加、减、加”，用左手柄点前排 ★ 影院。若完全静音，先提高一格。
 
+一只手柄都没有时，见 [CONTROLLER-FREE.md](CONTROLLER-FREE.md)：在 Meta VR 主页要**按住**减、加、减、加；启动助手 v10 还可以在主页空着时自动打开应用列表（`python3 tools/quest.py idle-launcher on`）。
+
 Mac 上已有授权 ADB 时，也可以双击仓库内的 `Open Cinema.command` 或 `Open App List.command`。这两个入口不需要恢复出厂或重新配对。
 
 ## 影院能打开，但看不到桌面
@@ -78,3 +80,27 @@ v8 遇到缺块或损坏帧会丢弃该帧并请求 `0x0302` IDR，不把残帧�
 ## USB 或 Wi-Fi 连接失败
 
 见 [ADB-AND-STARTUP.md](ADB-AND-STARTUP.md)。注意 `adb_enabled` 与开发者总开关不同；TLS 配对端口与连接端口不同。`unauthorized` 需要在头显确认自己的电脑。多设备请加 `--serial`，不要误操作手机。
+
+无线 ADB 报 “No route to host”，但 `nc -z <IP> <端口>` 能连通时，是 macOS 的“本地网络”权限拦住了 adb，见 [CONSOLE.md](CONSOLE.md#无线-adb-提示-no-route-to-host)。
+
+## 开机后影院没有自动打开
+
+如果开机时头显上出现“允许无线调试”之类的系统提示，它可能和影院自启在同一时刻出现，把影院压到后台。此时影院进程已经在后台，执行 `python3 tools/quest.py open-cinema` 或在 Lightning Launcher 里点 ★ 影院即可带回前台。
+
+## 主页空着时系统反复重试
+
+在停用了商店和首次设置向导、而初始设置从未完成的头显上，Meta VR 主页前面没有任何面板时，系统外壳会每秒十几次地重试打开 `systemux://first-time-nux` 和商店面板。用 `adb logcat | grep LaunchFirstTimeNux` 可以看到 `LaunchFirstTimeNux(crash_recovery)`。打开任何正常面板（比如 Lightning Launcher）就会停止。启动助手 v10 的 `idle-launcher on` 会自动做这件事，见 [CONTROLLER-FREE.md](CONTROLLER-FREE.md#主页空闲时自动打开应用列表)。
+
+## 不要临时启用首次设置向导
+
+不要为了打开手势追踪、语音助手之类的功能，在系统运行时用 `pm enable` 或 `tutorial show` 临时启用 `com.oculus.firsttimenux`。在没有登录 Meta 账号的头显上，向导会一直等账号令牌：
+
+- 它的面板一直不显示；
+- 再停用后，系统外壳仍然缓存着“向导可用”的状态。头显下次唤醒时，外壳会反复启动向导，每次卡 10 秒被强制关闭，然后又以崩溃恢复的名义重新启动。
+
+如果已经发生，保持向导为停用状态（`tutorial hide`），然后**重启头显**（`adb reboot`），外壳会重新判断向导不可用。重启后若影院没有自动打开，见上一节。
+
+## Lightning Launcher 用按键点图标时崩溃
+
+用游戏手柄或键盘点击 Lightning Launcher 的某个图标时，启动器可能因为 `NullPointerException: Intent.getPackage()` 崩溃。这是第三方启动器自身的问题，与影院和助手无关；重新打开启动器即可（音量快捷键或主页空闲自动打开都能做到）。
+

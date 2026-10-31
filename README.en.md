@@ -18,6 +18,27 @@ with **only a left Touch controller**.
 - Optional Store/Featured suppression, time-zone correction, reversible admin tools,
   build integrity checks and host-side regressions.
 
+New in v0.3.0 (see [CHANGELOG](CHANGELOG.md)):
+
+- **No controller at all.** Cinema v12 is driven with the headset volume keys
+  (tap + confirms, tap − goes back, hold moves left/right). Helper v10 detects a
+  held down/up/down/up in Meta VR Home by polling the media volume, and reopens
+  Lightning Launcher whenever VR Home is left empty (`idle-launcher on`, which
+  grants `READ_LOGS` over ADB and matches a single shell retry line).
+  See [CONTROLLER-FREE.md](docs/CONTROLLER-FREE.md) (Chinese).
+- **Local videos in the cinema.** Cinema v12 adds a "Local Videos" entry that plays
+  files from the headset's Movies and Download folders on the theater screen with
+  MediaPlayer, with posters showing the full file name, resume and gamepad
+  pause/seek. Java-only: `tools/build_cinema_v12.py` turns your v8 APK into v12 and
+  verifies native code, assets and resources are unchanged.
+  See [LOCAL-VIDEO.md](docs/LOCAL-VIDEO.md).
+- **Mac console.** `Open Console.command` serves a localhost-only page for status,
+  screenshots, app launch/install, video upload, system settings pages, power,
+  helper toggles and Sunshine. Standard-library Python only.
+  See [CONSOLE.md](docs/CONSOLE.md).
+- Why hand tracking cannot be enabled without a Meta account, and why FirstTimeNux
+  must not be re-enabled temporarily: [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md).
+
 Start with the [Chinese setup guide](docs/SETUP.md) and [build guide](docs/BUILD.md).
 The commands are also listed in the [main README](README.md).
 Python 3.10+, JDK and Android SDK platform/build tools are needed for local builds.

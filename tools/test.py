@@ -24,6 +24,16 @@ def main():
              ROOT / 'tests/VolumeShortcutTest.java'])
         for name in ['LeftControlStateTest', 'LeftTapGestureTest', 'VolumeShortcutTest']:
             run([executable('java'), '-cp', folder, name])
+        # Helper v10 (volume polling, empty-home detector) and cinema v12 (volume navigation, local videos).
+        helper, v12, newer = ROOT / 'helper/src/local/quest/adbkeeper', ROOT / 'cinema/v12/java/local/quest/cinema', folder / 'v12'
+        run([executable('javac'), '-d', newer, helper / 'VolumeShortcut.java', helper / 'VolumeMonitor.java', helper / 'IdleBurst.java',
+             v12 / 'LocalVideoCatalog.java', v12 / 'VolumeKeyState.java', v12 / 'VolumeShortcutState.java',
+             *(ROOT / 'tests' / (name + '.java') for name in
+               ['VolumeMonitorTest', 'IdleBurstTest', 'LocalVideoCatalogTest', 'VolumeKeyStateTest', 'VolumeShortcutStateTest'])])
+        for name in ['VolumeMonitorTest', 'local.quest.adbkeeper.IdleBurstTest', 'LocalVideoCatalogTest',
+                     'VolumeKeyStateTest', 'VolumeShortcutStateTest']:
+            run([executable('java'), '-cp', newer, name])
+        run([sys.executable, '-m', 'unittest', 'discover', '-s', ROOT / 'console/tests', '-v'])
         fixture = ROOT / 'tests/fixtures/rtp'
         original = (fixture / 'RtpReorderQueue.c').read_text()
         assertion = 'LC_ASSERT(!isBefore16(packet->sequenceNumber, queue->nextRtpSequenceNumber));'

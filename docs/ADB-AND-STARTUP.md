@@ -15,7 +15,7 @@
 
 安装脚本授予 `WRITE_SECURE_SETTINGS`。自启或音量快捷入口命令额外允许 `SYSTEM_ALERT_WINDOW`，用于 Android 10 的后台启动活动例外；应用不实际绘制 overlay。参考 [Android 后台启动限制](https://developer.android.com/guide/components/activities/background-starts)。
 
-助手还有开机广播、前台服务和查看网络状态权限；**没有 INTERNET、存储、摄像头或麦克风权限**。常驻通知可打开影院或设置页。行政广播接收器受 `WRITE_SECURE_SETTINGS` 保护。
+v10 的“主页空闲时打开应用列表”另需 `READ_LOGS`，只能由 `python3 tools/quest.py idle-launcher on` 通过 ADB 授予；助手只匹配 `LaunchFirstTimeNux(crash_recovery)` 这一行日志，不保存也不上传日志，详见 [CONTROLLER-FREE.md](CONTROLLER-FREE.md)。助手还有开机广播、前台服务和查看网络状态权限；**没有 INTERNET、存储、摄像头或麦克风权限**。常驻通知可打开影院或设置页。行政广播接收器受 `WRITE_SECURE_SETTINGS` 保护。
 
 ## 开启和关闭
 
