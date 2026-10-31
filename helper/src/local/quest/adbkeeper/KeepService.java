@@ -20,31 +20,47 @@ import android.os.SystemClock;
 import android.os.UserManager;
 import android.provider.Settings;
 import android.util.Log;
+import android.media.AudioManager;
 
 public final class KeepService extends Service {
-    private final VolumeShortcut volumeShortcut = new VolumeShortcut();
+    private static KeepService current;
+    private final VolumeMonitor volumeMonitor = new VolumeMonitor();
+    private AudioManager audio;
+    private PowerManager power;
+    private int samples,changes;
+    private String volumeSource="none";
     private final BroadcastReceiver volumeReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
-            if (!State.launcherShortcutEnabled(context)) { volumeShortcut.reset(); return; }
+            if (!State.launcherShortcutEnabled(context)) { volumeMonitor.reset(); return; }
             if (!"android.media.VOLUME_CHANGED_ACTION".equals(intent.getAction())) return;
             if (intent.getIntExtra("android.media.EXTRA_VOLUME_STREAM_TYPE",-1) != 3) return;
-            int oldValue = intent.getIntExtra("android.media.EXTRA_PREV_VOLUME_STREAM_VALUE",-1);
-            int newValue = intent.getIntExtra("android.media.EXTRA_VOLUME_STREAM_VALUE",-1);
-            Log.d("QuestQuickLaunch","volume " + oldValue + " -> " + newValue);
-            if (volumeShortcut.accept(oldValue,newValue,SystemClock.elapsedRealtime())) {
-                if (!Settings.canDrawOverlays(context)) {
-                    Log.w("QuestQuickLaunch","Background launch permission unavailable"); return;
-                }
-                Intent launcher = getPackageManager().getLaunchIntentForPackage("com.threethan.launcher");
-                if (launcher != null) {
-                    launcher.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    try { startActivity(launcher); Log.i("QuestQuickLaunch","Opened app list from volume shortcut"); }
-                    catch (RuntimeException e) { Log.w("QuestQuickLaunch","Cannot open app list",e); }
-                }
-            }
+            observeVolume("broadcast");
         }
     };
     private final Handler handler = new Handler();
+    private HomeIdleWatcher idleWatcher;
+    private final Runnable pollVolume=new Runnable() {
+        public void run() {
+            boolean active=State.launcherShortcutEnabled(KeepService.this) && power.isInteractive();
+            if (active) observeVolume("poll"); else volumeMonitor.reset();
+            handler.postDelayed(this,active ? 100 : 1000);
+        }
+    };
+    private void observeVolume(String source) {
+        try {
+            int volume=audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+            int previous=volumeMonitor.previous();
+            samples++;
+            if (previous >= 0 && previous != volume) { changes++; volumeSource=source; }
+            if (volumeMonitor.sample(volume,SystemClock.elapsedRealtime()))
+                AppListShortcut.open(this,"volume_"+source);
+        } catch (RuntimeException e) { volumeMonitor.reset(); volumeSource="read_failed"; }
+    }
+    static String shortcutStatus() {
+        KeepService s=current;
+        return s == null ? "monitor_running=false" : "monitor_running=true;volume="+s.volumeMonitor.previous()
+            +";samples="+s.samples+";changes="+s.changes+";step="+s.volumeMonitor.step()+";source="+s.volumeSource+";idle_watch="+HomeIdleWatcher.result+";idle_bursts="+HomeIdleWatcher.bursts;
+    }
     private final Runnable check = new Runnable() {
         public void run() {
             if (!State.needed(KeepService.this)) { stopSelf(); return; }
@@ -75,6 +91,8 @@ public final class KeepService extends Service {
                 Log.w("QuestAdbKeeper","ADB settings permission unavailable",e);
             }
             maybeStartCinema();
+            // Picks up READ_LOGS if it is granted after the service started.
+            if (idleWatcher != null) idleWatcher.start();
             handler.postDelayed(this,15000);
         }
     };
@@ -96,10 +114,16 @@ public final class KeepService extends Service {
     }
     public void onCreate() {
         super.onCreate();
+        current=this;
+        audio=(AudioManager)getSystemService(AUDIO_SERVICE);
+        power=(PowerManager)getSystemService(POWER_SERVICE);
         NotificationManager nm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         nm.createNotificationChannel(new NotificationChannel("adb_keeper","Quest 启动助手",NotificationManager.IMPORTANCE_LOW));
         startForeground(1,notification());
         registerReceiver(volumeReceiver,new IntentFilter("android.media.VOLUME_CHANGED_ACTION"));
+        handler.post(pollVolume);
+        idleWatcher=new HomeIdleWatcher(this,handler);
+        idleWatcher.start();
     }
     private Notification notification() {
         PendingIntent open = PendingIntent.getActivity(this,0,new Intent(this,CinemaShortcutActivity.class),PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
@@ -107,7 +131,7 @@ public final class KeepService extends Service {
         return new Notification.Builder(this,"adb_keeper")
             .setSmallIcon(android.R.drawable.stat_notify_sync)
             .setContentTitle("打开 Quest Cinema Fix")
-            .setContentText("音量减加减加："+(State.launcherShortcutEnabled(this)?"应用列表":"关")+" · USB："+(State.usbEnabled(this)?"常驻":"关")+" · Wi-Fi："+(State.enabled(this)?"常驻":"关"))
+            .setContentText("音量减加减加："+(State.launcherShortcutEnabled(this)?"应用列表":"关")+" · USB："+(State.usbEnabled(this)?"常驻":"关")+" · Wi-Fi："+(State.enabled(this)?"常驻":"关")+" · 空闲开列表："+(State.idleLauncherEnabled(this)?"开":"关"))
             .setContentIntent(open)
             .addAction(new Notification.Action.Builder(android.R.drawable.ic_media_play,"打开影院",open).build())
             .addAction(new Notification.Action.Builder(android.R.drawable.ic_menu_preferences,"设置",settings).build())
@@ -117,6 +141,6 @@ public final class KeepService extends Service {
         ((NotificationManager)getSystemService(NOTIFICATION_SERVICE)).notify(1,notification());
         handler.removeCallbacks(check);handler.post(check);return START_STICKY;
     }
-    public void onDestroy() { unregisterReceiver(volumeReceiver);handler.removeCallbacks(check);stopForeground(true);super.onDestroy(); }
+    public void onDestroy() { current=null;if(idleWatcher!=null)idleWatcher.stop();unregisterReceiver(volumeReceiver);handler.removeCallbacks(check);handler.removeCallbacks(pollVolume);volumeMonitor.reset();stopForeground(true);super.onDestroy(); }
     public IBinder onBind(Intent intent) { return null; }
 }
