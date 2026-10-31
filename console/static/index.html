@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quest 控制台</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <h1>Quest 控制台</h1>
+  <span id="conn" class="pill">检查连接…</span>
+  <button id="reconnect" class="ghost">重新连接无线 ADB</button>
+</header>
+
+<main>
+  <section class="card" id="status-card">
+    <h2>头显状态</h2>
+    <dl id="status"></dl>
+  </section>
+
+  <section class="card wide" id="screen-card">
+    <h2>头显画面</h2>
+    <div class="screen-wrap">
+      <canvas id="screen" width="720" height="800"></canvas>
+      <p id="screen-note" class="note"></p>
+    </div>
+    <div class="row">
+      <label><input type="checkbox" id="screen-auto" checked> 自动刷新</label>
+      <select id="screen-eye"><option value="0">左眼</option><option value="1">右眼</option></select>
+      <button id="screen-now" class="ghost">刷新一次</button>
+      <button id="mirror">打开实时镜像窗口</button>
+    </div>
+  </section>
+
+  <section class="card" id="quick-card">
+    <h2>常用操作</h2>
+    <div class="grid">
+      <button data-launch="local.quest.cinema">打开影院</button>
+      <button data-launch="com.threethan.launcher">打开应用列表</button>
+    </div>
+    <h3>音量</h3>
+    <div class="grid three">
+      <button data-volume="down">音量 −</button>
+      <button data-volume="up">音量 +</button>
+      <button data-volume="mute">静音</button>
+    </div>
+    <p class="note">连续快速按“减加减加”会触发启动助手的应用列表快捷键。</p>
+    <h3>电源</h3>
+    <div class="grid">
+      <button data-power="wake">唤醒</button>
+      <button data-power="sleep">休眠</button>
+      <button id="keep-awake" class="toggle">不戴也保持唤醒：关</button>
+      <button data-power="reboot" class="danger">重启头显</button>
+    </div>
+  </section>
+
+  <section class="card wide" id="apps-card">
+    <h2>应用 <button id="apps-refresh" class="ghost small">刷新</button></h2>
+    <ul id="apps" class="list"></ul>
+  </section>
+
+  <section class="card" id="install-card">
+    <h2>安装应用</h2>
+    <label class="drop" id="install-drop">
+      <input type="file" id="install-file" accept=".apk,.obb" multiple hidden>
+      把 APK 拖到这里，或点这里选择文件<br>
+      <small>也可以给已安装的应用补充 OBB 数据文件</small>
+    </label>
+    <div id="install-result"></div>
+  </section>
+
+  <section class="card" id="media-card">
+    <h2>媒体</h2>
+    <label class="drop" id="media-drop">
+      <input type="file" id="media-file" accept="video/*" multiple hidden>
+      把视频拖到这里，传到头显的 Movies 文件夹
+    </label>
+    <p class="note">传好后，在影院（Quest Cinema Fix）的 Local Videos 里播放。</p>
+    <ul id="media" class="list compact"></ul>
+    <h3>在头显浏览器打开网址</h3>
+    <form id="url-form" class="row">
+      <input id="url" type="url" placeholder="https://…" required>
+      <button>打开</button>
+    </form>
+  </section>
+
+  <section class="card" id="settings-card">
+    <h2>头显设置页</h2>
+    <div id="settings" class="grid three"></div>
+    <p class="note">设置页会在头显里打开。系统窗口有些不允许截屏，画面里可能是空白。</p>
+  </section>
+
+  <section class="card" id="helper-card">
+    <h2>启动助手</h2>
+    <div id="helper"></div>
+  </section>
+
+  <section class="card" id="stream-card">
+    <h2>Mac 桌面串流</h2>
+    <p id="sunshine-state">…</p>
+    <div class="grid">
+      <button data-sunshine="start">启动串流服务</button>
+      <button data-sunshine="stop" class="ghost">停止串流服务</button>
+    </div>
+    <p class="note">启动后，在头显的 Quest Cinema Fix 里选 Mac Quest Display → Mac Desktop。</p>
+  </section>
+</main>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

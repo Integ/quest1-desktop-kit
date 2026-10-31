@@ -1,5 +1,7 @@
 # 只有左手柄：退出影院后打开应用列表
 
+> 助手 v10 起，在 Meta VR 主页要**按住**每个音量键直到音量条变化一下再换下一个（系统不把主页里的音量键事件交给应用，助手改为轮询音量）；影院里仍是快速短按。完全没有手柄时的用法见 [CONTROLLER-FREE.md](CONTROLLER-FREE.md)。
+
 助手 **v4 / `4.0-volume-launcher`** 增加了头显实体音量键入口。适用于影院已经退出、右手柄缺失、无法按右侧 Oculus 按钮进入应用列表的情况。用户已在同一台 Quest 1 上用实体按键确认应用列表出现。
 
 ## 使用
@@ -7,7 +9,7 @@
 安装助手 v4 和 Lightning Launcher，保留原有配置：
 
 ```sh
-python3 tools/quest.py install-helper dist/QuestStartupHelper-v4.0.apk
+python3 tools/quest.py install-helper dist/QuestStartupHelper-v10.0.apk
 python3 tools/quest.py volume-shortcut on
 ```
 

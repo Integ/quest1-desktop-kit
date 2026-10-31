@@ -15,6 +15,7 @@ PATTERNS = [
     re.compile(rb'github_pat_[A-Za-z0-9_]{30,}'),
     re.compile(rb'/' + rb'Users/[^/\s]+/'),
     re.compile(rb'\b192\.168\.\d{1,3}\.\d{1,3}\b'),
+    re.compile(rb'\b1PASH[0-9A-Z]{9}\b'),  # Quest 1 serial numbers
 ]
 
 

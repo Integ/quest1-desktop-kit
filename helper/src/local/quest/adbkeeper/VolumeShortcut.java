@@ -1,8 +1,9 @@
 package local.quest.adbkeeper;
 
-/** Recognizes down/up/down/up without reading controller or keyboard input. */
+/** Recognizes down/up/down/up, grouping repeat steps from a held volume button. */
 public final class VolumeShortcut {
     private int step;
+    private int direction;
     private long last;
     private long cooldownUntil;
 
@@ -10,10 +11,12 @@ public final class VolumeShortcut {
         if (previous < 0 || current < 0 || current == previous) return false;
         if (now < cooldownUntil) return false;
         int delta = current - previous;
-        if (Math.abs(delta) != 1) { step = 0; return false; }
-        if (step > 0 && (now < last || now - last > 1500)) step = 0;
-        int wanted = step % 2 == 0 ? -1 : 1;
-        step = delta == wanted ? step + 1 : (delta == -1 ? 1 : 0);
+        if (Math.abs(delta) > 3) { step = 0; direction=0; return false; }
+        if (step > 0 && (now < last || now - last > 1500)) { step = 0; direction=0; }
+        int next = delta < 0 ? -1 : 1;
+        if (step == 0) step = next == -1 ? 1 : 0;
+        else if (next != direction) step++;
+        direction=next;
         last = now;
         if (step == 4) {
             step = 0;
@@ -23,5 +26,6 @@ public final class VolumeShortcut {
         return false;
     }
 
-    public void reset() { step = 0; last = 0; cooldownUntil = 0; }
+    public int step() { return step; }
+    public void reset() { step = 0; direction=0; last = 0; cooldownUntil = 0; }
 }

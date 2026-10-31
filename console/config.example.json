@@ -1,0 +1,9 @@
+{
+  "serial": "YOUR_QUEST_SERIAL",
+  "host": "QUEST_WIFI_IP",
+  "port": null,
+  "listen_port": 8765,
+  "sunshine": "/opt/homebrew/opt/sunshine/bin/sunshine",
+  "sunshine_conf": "",
+  "scrcpy": "/opt/homebrew/bin/scrcpy"
+}

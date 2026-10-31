@@ -1,5 +1,32 @@
 # Changelog
 
+## v0.3.0 — 2026-10-30
+
+- Controller-free use on a Quest 1 with no Touch controllers and no Meta account
+  (see `docs/CONTROLLER-FREE.md`).
+- Helper v10 (`10.0-console-status`): Meta VR Home volume gesture by polling the
+  media volume (held down/up/down/up); opt-in "open the app list when VR Home is
+  empty", which matches only the shell's `LaunchFirstTimeNux(crash_recovery)`
+  retry line and needs `READ_LOGS` granted over ADB (`tools/quest.py
+  idle-launcher on`); service restart on `MY_PACKAGE_REPLACED`; admin `STATUS`
+  reports every toggle and `IDLE_ENABLE` / `IDLE_DISABLE` were added.
+- Cinema v12 (`1.0-quest-local-video-stereo-multifec`): headset volume-key
+  navigation (tap + confirm, tap − back/menu, hold left/right, quick
+  down/up/down/up opens Lightning Launcher) and a "Local Videos" entry that plays
+  Movies/Download files in the theater with MediaPlayer, posters with full file
+  names, resume, gamepad pause/seek and preloading of paired computers' apps.
+  Java-only; `tools/build_cinema_v12.py` builds it from v8 and verifies native
+  code, assets and resources are unchanged.
+- Mac console (`console/`, `Open Console.command`): localhost-only web page for
+  status, screenshots, apps, APK/OBB install with compatibility checks, video
+  upload, settings pages, power, helper toggles, mirroring and Sunshine. Device
+  details stay in `.local/console.json`.
+- Troubleshooting for hand tracking without an account, the FirstTimeNux retry
+  loop, autostart hidden behind the wireless-debugging prompt, macOS Local Network
+  blocking `adb connect`, and a Lightning Launcher crash on key-triggered clicks.
+- Audit now also flags Quest 1 serial numbers. Release ships the device-tested
+  helper v10 APK and the source archive; cinema APKs remain excluded.
+
 ## v0.2.0 — 2026-10-25
 
 - Publish cinema v8 (`1.0-quest-left-stereo-multifec`) ARM64 network source and

@@ -1,0 +1,27 @@
+{
+  "package": "local.quest.adbkeeper",
+  "version_code": 10,
+  "version_name": "10.0-console-status",
+  "kit_release": "v0.3.0",
+  "source_ref": "v0.3.0",
+  "apk_sha256": "159bcf4ed39b1c4019634aee09cad2f25bd0a5a2b8c946c5bb54f47bcd35c385",
+  "certificate_sha256": "d9dd58624458932332595388d0530ce3352ec1d83c36a53b599d3e00fe38af09",
+  "note": "Device-tested helper v10. Complete corresponding source at this tag; local rebuild signatures and DEX metadata may differ.",
+  "validation": "Held down/up/down/up opens the app list from Meta VR Home (since v8). Empty VR Home reopened Lightning Launcher in about 7 s with READ_LOGS granted; STATUS reports all toggles; idle toggle switched from the Mac console. No reboot test for v10.",
+  "source_sha256": {
+    "helper/AndroidManifest.xml": "08d537cb5e7fdbcbde59b6c8ff9697ab56c70e2004f08d5724e6dc4c9231494a",
+    "helper/res/drawable/cinema.xml": "e9f8b83ee30a9a06056be7f3edfafff4334f9d947aaba6d978cc662c6f0e7a5d",
+    "helper/src/local/quest/adbkeeper/AdminReceiver.java": "9a9d4fa7e5720deaeea7d341463a4b3edbfc352ac0737d1c648bf6ee20b803d3",
+    "helper/src/local/quest/adbkeeper/AppListShortcut.java": "166304dd3c62b15c9830f723cd6f91bb89efe7a35e4908466c5f3341ff4cc89e",
+    "helper/src/local/quest/adbkeeper/BootReceiver.java": "114556e14e3388fb098e6e9c186ffc9198e3e08d389bac5f09b8c7ef8e085af4",
+    "helper/src/local/quest/adbkeeper/CinemaShortcutActivity.java": "c85c948073c1d8c4974ad56f363a80ab2c4d514b87a348c424ff39e7ebf49aa8",
+    "helper/src/local/quest/adbkeeper/HomeIdleWatcher.java": "2da9fdf8ceda514c9d5fff0b0bf4c5c6956d0fca3c72aba67aaf0c9129cff6f4",
+    "helper/src/local/quest/adbkeeper/IdleBurst.java": "3deba7f2c6f22fb5cf68c14751a6ca40a86dc9ea8095704a5c15519235ea5362",
+    "helper/src/local/quest/adbkeeper/IdleBurstProbe.java": "517ca752a566a617f7896a94ae95b2267044e84469691ecee042804156050fb3",
+    "helper/src/local/quest/adbkeeper/KeepService.java": "ff3cef91c0bedc971c2859fd96f0525c498e024b8d563607c5f09880c121e4c9",
+    "helper/src/local/quest/adbkeeper/MainActivity.java": "9eeb2a11a308195e4e7a40581432f69717bec2a0d92c79634ab321c97498a094",
+    "helper/src/local/quest/adbkeeper/State.java": "a6e9803bfbc11479da7cf08a868ed6cfbe42a4288b2331705737eaa3eeb2cf6d",
+    "helper/src/local/quest/adbkeeper/VolumeMonitor.java": "fa88e5ddb1f4fc266ffd696f14cd2078cb143077403cee89a2b12b909fee96ab",
+    "helper/src/local/quest/adbkeeper/VolumeShortcut.java": "7fbf657f818f0750a6ce4783d0aceca8b2bc5b62b3a40a7ac16a494848e2435f"
+  }
+}
