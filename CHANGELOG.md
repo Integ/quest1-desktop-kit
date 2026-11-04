@@ -1,5 +1,19 @@
 # Changelog
 
+## Cinema v15 — 2026-11-03
+
+- Add a media-volume mode toggled by pressing both headset volume buttons together.
+  Volume keys adjust media audio in this mode; 6 seconds of inactivity returns to navigation.
+- Keep navigation taps/holds and the launcher shortcut. Chord releases never select,
+  go back, or change volume. Mode state resets when the activity pauses.
+- Add host regressions for chord boundaries, release suppression, held-key repeats,
+  idle exit and lifecycle reset. The builder retains its existing filename and now
+  produces `QuestCinemaFix-v15.apk`.
+- Restore the missing ARM64 app-card UserData association that kept posters hidden
+  even after successful generation and texture loading. A single instruction is
+  patched with pinned full-library input/output hashes; all other native code
+  and assets remain unchanged.
+
 ## v0.3.0 — 2026-10-30
 
 - Controller-free use on a Quest 1 with no Touch controllers and no Meta account
