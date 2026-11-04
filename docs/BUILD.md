@@ -63,13 +63,13 @@ APK 构建分为两个阶段：
 
 这里结合了精确发布版补丁与网络模块源码构建；没有从完整 Oculus SDK 工程重新编译 VR 库。上游源码与授权见 [NOTICE](../NOTICE.md)。历史 v7 的机器码偏移不用于新编译的网络库；说明见 [PATCHES.md](PATCHES.md)。
 
-## Quest Cinema Fix v12（本地视频）
+## Quest Cinema Fix v15（本地视频与音量模式）
 
 ```sh
 python3 tools/build_cinema_v12.py
 ```
 
-以上一节生成的 `dist/QuestCinemaFix-v8.apk` 为输入，输出 `dist/QuestCinemaFix-v12.apk`（versionCode 12，`1.0-quest-local-video-stereo-multifec`）。v12 只改 Java 层：`cinema/java` 与 `cinema/v12/java` 合并后编译（同名文件以后者为准），在 `MainActivity` 的 16 个方法开头插入判断，并改写 `PcSelector` 的一处调用。最终 APK 只从重新打包的结果中取 `classes.dex` 和 `AndroidManifest.xml`，其余条目原样取自 v8；构建器会核对原生库、素材和资源逐字节不变、版本号正确。可以用 `--base-apk`、`--output` 指定路径，签名参数与 v8 相同。设计和验证见 [LOCAL-VIDEO.md](LOCAL-VIDEO.md)。
+以上一节生成的 `dist/QuestCinemaFix-v8.apk` 为输入，输出 `dist/QuestCinemaFix-v15.apk`（versionCode 15，`1.0-quest-local-video-posters`）。脚本保留 `build_cinema_v12.py` 文件名；v15 包含音量模式，并修复 ARM64 视频卡片隐藏海报的问题。Java 部分：`cinema/java` 与 `cinema/v12/java` 合并后编译（同名文件以后者为准），在 `MainActivity` 的 16 个方法开头插入判断，并改写 `PcSelector` 的一处调用。最终 APK 只从重新打包的结果中取 `classes.dex` 和 `AndroidManifest.xml`，ARM64 `libcinema.so` 另外应用一条带完整输入/输出哈希保护的指令修复（`tools/poster_patch.py`）；其余 301 个原生库、素材和资源条目与 v8 逐字节一致，并核对版本号。可以用 `--base-apk`、`--output` 指定路径，签名参数与 v8 相同。设计和验证见 [LOCAL-VIDEO.md](LOCAL-VIDEO.md)。
 
 ## 签名和更新
 

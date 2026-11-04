@@ -2,6 +2,8 @@ package local.quest.cinema;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.Context;
+import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -9,6 +11,7 @@ import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
+import android.widget.Toast;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,12 +20,15 @@ import java.util.Map;
 public final class VolumeNavigation {
     private static final VolumeKeyState state=new VolumeKeyState();
     private static final VolumeShortcutState shortcut=new VolumeShortcutState();
+    private static final VolumeModeState volumeMode=new VolumeModeState();
     private static final Handler main=new Handler(Looper.getMainLooper());
     private static final Map<Integer,Runnable> releases=new HashMap<Integer,Runnable>();
     private static WeakReference<Activity> owner=new WeakReference<Activity>(null);
     private static Runnable holding;
     private static Runnable shortcutTimeout;
     private static long nextActionAt;
+    private static Runnable volumeTimeout;
+    private static Toast feedback;
 
     public static boolean onKey(final Activity activity, KeyEvent event) {
         final int code=event.getKeyCode();
@@ -31,6 +37,31 @@ public final class VolumeNavigation {
             Activity previous=owner.get();
             if (previous != null) reset(previous);
             owner=new WeakReference<Activity>(activity);
+        }
+        if (event.getAction() != KeyEvent.ACTION_DOWN && event.getAction() != KeyEvent.ACTION_UP) return true;
+        final long now=SystemClock.uptimeMillis();
+        if (volumeMode.expire(now)) showMode(activity,false);
+        int volumeAction=volumeMode.key(code,event.getAction() == KeyEvent.ACTION_DOWN,
+            event.getRepeatCount(),now,event.isCanceled());
+        if (volumeAction != VolumeModeState.NAVIGATE) {
+            if (volumeAction == VolumeModeState.ENTER || volumeAction == VolumeModeState.EXIT) {
+                cancelNavigation(activity);
+                showMode(activity,volumeAction == VolumeModeState.ENTER);
+            } else if (volumeAction == VolumeModeState.RAISE || volumeAction == VolumeModeState.LOWER) {
+                AudioManager audio=(AudioManager)activity.getSystemService(Context.AUDIO_SERVICE);
+                if (audio != null) {
+                    audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
+                        volumeAction == VolumeModeState.RAISE ? AudioManager.ADJUST_RAISE : AudioManager.ADJUST_LOWER,
+                        AudioManager.FLAG_SHOW_UI);
+                    Log.i("QuestVolume","media volume="+audio.getStreamVolume(AudioManager.STREAM_MUSIC));
+                }
+            }
+            scheduleVolumeTimeout(activity);
+            return true;
+        }
+        if (event.isCanceled()) {
+            cancelNavigation(activity);
+            return true;
         }
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             if (event.getRepeatCount() != 0 || !state.press(code,event.getEventTime())) return true;
@@ -52,6 +83,34 @@ public final class VolumeNavigation {
             } else handleAction(activity,state.release(code,event.getEventTime()));
         }
         return true;
+    }
+
+    private static void showMode(Activity activity,boolean enabled) {
+        if (feedback != null) feedback.cancel();
+        feedback=Toast.makeText(activity,enabled
+            ? "音量模式：＋/－调节音量；停止操作 6 秒后恢复导航"
+            : "导航模式：短按确认/返回，长按左右切换",Toast.LENGTH_SHORT);
+        feedback.show();
+        Log.i("QuestVolume",enabled ? "volume mode=on" : "volume mode=off");
+        if (enabled) {
+            AudioManager audio=(AudioManager)activity.getSystemService(Context.AUDIO_SERVICE);
+            if (audio != null) audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
+                AudioManager.ADJUST_SAME,AudioManager.FLAG_SHOW_UI);
+        }
+    }
+
+    private static void scheduleVolumeTimeout(final Activity activity) {
+        if (volumeTimeout != null) main.removeCallbacks(volumeTimeout);
+        volumeTimeout=null;
+        long deadline=volumeMode.deadline();
+        if (deadline == 0) return;
+        volumeTimeout=new Runnable() {
+            public void run() {
+                volumeTimeout=null;
+                if (owner.get() == activity && volumeMode.expire(SystemClock.uptimeMillis())) showMode(activity,false);
+            }
+        };
+        main.postAtTime(volumeTimeout,deadline);
     }
 
     private static void handleAction(final Activity activity,int action) {
@@ -126,11 +185,17 @@ public final class VolumeNavigation {
         releases.put(key,release);
         main.postDelayed(release,120);
     }
-    public static void reset(Activity activity) {
+    private static void cancelNavigation(Activity activity) {
         state.cancel(); shortcut.cancel(); holding=null; shortcutTimeout=null; nextActionAt=0;
         main.removeCallbacksAndMessages(null);
+        volumeTimeout=null;
         for (Integer key:releases.keySet()) send(activity,key,KeyEvent.ACTION_UP);
         releases.clear();
+    }
+    public static void reset(Activity activity) {
+        cancelNavigation(activity);
+        volumeMode.reset();
+        if (feedback != null) { feedback.cancel(); feedback=null; }
         owner.clear();
     }
 }

@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Build Quest Cinema Fix v12 (local videos + volume navigation) from a v8 APK built by build_cinema.py.
+"""Build Quest Cinema Fix v15 (local videos, volume mode, visible posters) from a v8 APK.
 
 SPDX-License-Identifier: GPL-3.0-or-later.
 
-v12 changes only Java code: the cinema's own classes are replaced from cinema/java plus cinema/v12/java,
+The cinema's own classes are replaced from cinema/java plus cinema/v12/java,
 16 MainActivity methods get a short hook at the top, and one PcSelector call is routed through
-LocalVideos. Native libraries, assets and resources must stay byte-identical to the v8 input.
+LocalVideos. One pinned ARM64 instruction restores the poster item association;
+all other native libraries, assets and resources stay byte-identical to the v8 input.
 """
 import argparse
 from pathlib import Path
@@ -15,8 +16,9 @@ import zipfile
 
 from common import ROOT, LOCAL, CACHE, DIST, KitError, android_jar, build_tool, download, executable, run, sha256, sign_apk
 from build_cinema import APKTOOL_URL, APKTOOL_SHA
+from poster_patch import LIBRARY, fix_posters
 
-VERSION_CODE, VERSION_NAME = 12, '1.0-quest-local-video-stereo-multifec'
+VERSION_CODE, VERSION_NAME = 15, '1.0-quest-local-video-posters'
 LV = 'Llocal/quest/cinema/LocalVideos;'
 MA = 'Lcom/oculus/cinemasdk/MainActivity;'
 # Tri-state int (-1 = not ours) turned into a verifier-safe boolean constant.
@@ -117,7 +119,7 @@ def java_sources():
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--base-apk', type=Path, default=DIST / 'QuestCinemaFix-v8.apk', help='v8 APK from tools/build_cinema.py')
-    parser.add_argument('--output', type=Path, default=DIST / 'QuestCinemaFix-v12.apk')
+    parser.add_argument('--output', type=Path, default=DIST / 'QuestCinemaFix-v15.apk')
     parser.add_argument('--keystore')
     parser.add_argument('--password-file')
     args = parser.parse_args()
@@ -129,7 +131,7 @@ def main():
     framework = CACHE / 'framework'
     framework.mkdir(parents=True, exist_ok=True)
     jar = android_jar()
-    with tempfile.TemporaryDirectory(prefix='cinema-v12-', dir=LOCAL) as directory:
+    with tempfile.TemporaryDirectory(prefix='cinema-v15-', dir=LOCAL) as directory:
         work = Path(directory)
         classes, dex, generated, decoded = work / 'classes', work / 'dex', work / 'generated', work / 'decoded'
         classes.mkdir(); dex.mkdir()
@@ -174,7 +176,8 @@ def main():
                 if info.filename.startswith('META-INF/') or info.filename in fresh or \
                         (info.filename.startswith('classes') and info.filename.endswith('.dex')):
                     continue
-                out.writestr(info, old.read(info.filename))
+                data = old.read(info.filename)
+                out.writestr(info, fix_posters(data) if info.filename == LIBRARY else data)
             for name in sorted(fresh):
                 out.writestr(new.getinfo(name), new.read(name))
         badging = run([build_tool('aapt'), 'dump', 'badging', unsigned], capture=True)
@@ -184,10 +187,11 @@ def main():
         sign_apk(unsigned, output, args.keystore, args.password_file)
     with zipfile.ZipFile(base) as old, zipfile.ZipFile(output) as new:
         kept = [n for n in old.namelist() if n.startswith(('lib/', 'assets/', 'res/')) or n == 'resources.arsc']
-        changed = [n for n in kept if n not in new.namelist() or old.read(n) != new.read(n)]
+        changed = [n for n in kept if n not in new.namelist() or
+                   (fix_posters(old.read(n)) if n == LIBRARY else old.read(n)) != new.read(n)]
         if changed:
-            raise KitError('v12 must not change native code, assets or resources: ' + ', '.join(changed[:5]))
-    print(f'Cinema v{VERSION_CODE} ({VERSION_NAME}); {len(kept)} native/asset/resource entries unchanged; SHA-256 {sha256(output)}')
+            raise KitError('Unexpected change to native code, assets or resources: ' + ', '.join(changed[:5]))
+    print(f'Cinema v{VERSION_CODE} ({VERSION_NAME}); {len(kept)-1} native/asset/resource entries unchanged; one pinned ARM64 poster instruction fixed; SHA-256 {sha256(output)}')
 
 
 if __name__ == '__main__':

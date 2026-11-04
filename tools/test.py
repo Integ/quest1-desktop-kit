@@ -27,11 +27,11 @@ def main():
         # Helper v10 (volume polling, empty-home detector) and cinema v12 (volume navigation, local videos).
         helper, v12, newer = ROOT / 'helper/src/local/quest/adbkeeper', ROOT / 'cinema/v12/java/local/quest/cinema', folder / 'v12'
         run([executable('javac'), '-d', newer, helper / 'VolumeShortcut.java', helper / 'VolumeMonitor.java', helper / 'IdleBurst.java',
-             v12 / 'LocalVideoCatalog.java', v12 / 'VolumeKeyState.java', v12 / 'VolumeShortcutState.java',
+             v12 / 'LocalVideoCatalog.java', v12 / 'VolumeKeyState.java', v12 / 'VolumeShortcutState.java', v12 / 'VolumeModeState.java',
              *(ROOT / 'tests' / (name + '.java') for name in
-               ['VolumeMonitorTest', 'IdleBurstTest', 'LocalVideoCatalogTest', 'VolumeKeyStateTest', 'VolumeShortcutStateTest'])])
+               ['VolumeMonitorTest', 'IdleBurstTest', 'LocalVideoCatalogTest', 'VolumeKeyStateTest', 'VolumeShortcutStateTest', 'VolumeModeStateTest'])])
         for name in ['VolumeMonitorTest', 'local.quest.adbkeeper.IdleBurstTest', 'LocalVideoCatalogTest',
-                     'VolumeKeyStateTest', 'VolumeShortcutStateTest']:
+                     'VolumeKeyStateTest', 'VolumeShortcutStateTest', 'VolumeModeStateTest']:
             run([executable('java'), '-cp', newer, name])
         run([sys.executable, '-m', 'unittest', 'discover', '-s', ROOT / 'console/tests', '-v'])
         fixture = ROOT / 'tests/fixtures/rtp'

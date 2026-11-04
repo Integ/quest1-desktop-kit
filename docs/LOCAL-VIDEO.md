@@ -1,6 +1,6 @@
-# 影院 v12：播放头显里的本地视频
+# 影院 v15：播放头显里的本地视频
 
-影院 v12（`1.0-quest-local-video-stereo-multifec`，versionCode 12）在电脑列表里增加了 **Local Videos**，可以在 VR 影院的大屏幕上直接播放头显里的视频，不需要电脑。Mac 串流、场景、左手操作都和 v8 相同，另外加入了音量键导航（见 [CONTROLLER-FREE.md](CONTROLLER-FREE.md)）。
+影院 v15（`1.0-quest-local-video-posters`，versionCode 15）在电脑列表里增加了 **Local Videos**，可以在 VR 影院的大屏幕上直接播放头显里的视频，不需要电脑。Mac 串流、场景、左手操作都和 v8 相同，另外加入了音量键导航（见 [CONTROLLER-FREE.md](CONTROLLER-FREE.md)）。
 
 ## 使用
 
@@ -17,12 +17,14 @@
 
 ## 原理
 
-原生影院界面（C++）只通过 `MainActivity` 里的十几个 Java 方法和外部交流：`nativeAddPc` / `nativeAddApp` 往列表里加项目，`startMovie` / `stopMovie` 开始和停止，`nativePrepareNewVideo` 给出影院屏幕的 `SurfaceTexture`。v12 只改 Java 层：
+原生影院界面（C++）只通过 `MainActivity` 里的十几个 Java 方法和外部交流：`nativeAddPc` / `nativeAddApp` 往列表里加项目，`startMovie` / `stopMovie` 开始和停止，`nativePrepareNewVideo` 给出影院屏幕的 `SurfaceTexture`。本地视频播放在 Java 层实现：
 
 - 新增 `local.quest.cinema.LocalVideos`：扫描文件夹、绘制海报、用 `MediaPlayer` 把画面直接画到影院屏幕的纹理上，以及处理手柄按键。
 - 新增 `LocalVideoCatalog`：文件规则、标题、续播位置。不依赖 Android，带主机测试。
 - `MainActivity` 的 16 个方法开头各加一段判断：是本地视频就交给 `LocalVideos`，否则照原样运行。
 - `PcSelector` 里有一处 `nativeAddPc` 调用，改为先经过 `LocalVideos.addRemotePc`：已配对的电脑会立刻从缓存加载它的应用列表。
+
+v15 同时修复原生 `AppSelectionView::SetAppList` 漏写 `item->UserData = (void *)movie` 的缺陷。`MoviePosterComponent` 把空关联当作空卡片，因此即使海报纹理已加载，仍会隐藏图片。`tools/poster_patch.py` 只支持固定 ARM64 基线，替换一条保存指针的指令；ARM32 未应用这项修复。
 
 几个由原生界面决定的细节：
 
@@ -36,14 +38,15 @@
 先按 [BUILD.md](BUILD.md) 构建 v8，再运行：
 
 ```sh
-python3 tools/build_cinema_v12.py            # 输入 dist/QuestCinemaFix-v8.apk，输出 dist/QuestCinemaFix-v12.apk
-python3 tools/quest.py install-cinema dist/QuestCinemaFix-v12.apk
+python3 tools/build_cinema_v12.py            # 输入 dist/QuestCinemaFix-v8.apk，输出 dist/QuestCinemaFix-v15.apk
+python3 tools/quest.py install-cinema dist/QuestCinemaFix-v15.apk
 ```
 
-构建器会合并 `cinema/java` 和 `cinema/v12/java`（同名文件以后者为准）来编译 Java 类，`cinema/v12/stubs` 只用于编译、不进 APK；然后插入上述 smali 改动并把版本改为 12。最终 APK 只从重新打包的结果中取 `classes.dex` 和 `AndroidManifest.xml`，其余所有条目都原样取自 v8，并会核对 302 个原生库、素材和资源文件与 v8 逐字节一致。签名规则与 v8 相同：必须和已安装的影院使用同一个签名才能原地升级。
+构建器会合并 `cinema/java` 和 `cinema/v12/java`（同名文件以后者为准）来编译 Java 类，`cinema/v12/stubs` 只用于编译、不进 APK；然后插入上述 smali 改动并把版本改为 15。最终 APK 只从重新打包的结果中取 `classes.dex` 和 `AndroidManifest.xml`，ARM64 `libcinema.so` 另外修复一条海报关联指令，输入和输出完整 SHA-256 均固定校验；其余 301 个原生库、素材和资源文件与 v8 逐字节一致。签名规则与 v8 相同：必须和已安装的影院使用同一个签名才能原地升级。
 
 ## 验证范围
 
 - 主机测试：`LocalVideoCatalogTest` 覆盖文件识别、标题与去重、编号、续播、跳转和时长显示。
-- 实机：在一台 Quest 1 v50 上，用户从 Local Videos 播放了一段 H.264 1080p60 视频；第二次打开时从 63.9 秒处续播。已配对 Mac 上线后，影院从缓存提前加载了 Mac Desktop。用仓库构建器生成的 v12 也在同一台头显上通过了启动冒烟测试（列表和海报正常加载，无校验错误）。
+- 实机：在一台 Quest 1 v50 上，用户从 Local Videos 播放了一段 H.264 1080p60 视频；第二次打开时从 63.9 秒处续播。已配对 Mac 上线后，影院从缓存提前加载了 Mac Desktop。用仓库构建器生成的 v12 也在同一台头显上通过了启动冒烟测试（启动无校验错误；v15 另行修复了已加载海报在列表中被隐藏的问题）。
+- v15：在 Quest 1 上原地升级并正常启动；三段本地视频海报已加载，用户确认封面恢复显示。音量模式的状态机回归通过，实机已验证媒体音量可升降。
 - 尚未验证：H.265、mkv、长视频、竖屏视频的旋转，以及大量视频时首次生成海报的耗时。
